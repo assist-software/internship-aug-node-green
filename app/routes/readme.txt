@@ -1,0 +1,1 @@
+Define your routes here, check this tutorial for reference: https://bezkoder.com/node-express-sequelize-postgresql/#Define_Routes

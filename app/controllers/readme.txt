@@ -1,0 +1,1 @@
+Define your controllers here, check this tutorial for reference: https://bezkoder.com/node-express-sequelize-postgresql/#Create_the_Controller
