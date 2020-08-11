@@ -19,7 +19,16 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+sequelize
+.authenticate()
+.then(()=>{
+  console.log('Connection hase been established successfully.');
+})
+.catch(err=>{
+  console.error('Unable to connect to the database:',err);
+});
+
 // Define all models here like this:
 // db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
-
+db.Sport=require("./sport.model.js")(sequelize,Sequelize);
 module.exports = db;
