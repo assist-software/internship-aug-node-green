@@ -32,6 +32,5 @@ sequelize
 // Define all models here like this:
 // db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
 db.Role = require("./role.model.js")(sequelize, Sequelize);
-
-
+db.Sport=require("./sport.model.js")(sequelize,Sequelize);
 module.exports = db;
