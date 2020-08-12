@@ -10,7 +10,7 @@ module.exports=(sequelize,Sequelize)=>{
         }
     });
     
-    Sport.sync({force: true}).then(()=>{
+    Sport.sync().then(()=>{
         Sport.create({
             type:'Running'
         });
