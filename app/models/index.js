@@ -46,7 +46,6 @@ db.ClubRequest = require("./club-request.model.js")(sequelize, Sequelize);
 
 db.ClubInvite.belongsTo(db.Club);
 db.ClubRequest.belongsTo(db.Club);
-=======
 db.Sport = require("./sport.model.js")(sequelize,Sequelize);
 db.User = require("./user.model.js")(sequelize, Sequelize);
 
@@ -61,5 +60,4 @@ db.User.belongsTo(db.Sport, {
   as: 'secondary_sport'
 });
 
->>>>>>> bc69a5742830f7a43e7f598d3a53e8cf6c10b305
 module.exports = db;
