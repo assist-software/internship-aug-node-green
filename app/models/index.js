@@ -22,8 +22,10 @@ db.sequelize = sequelize;
 // Define all models here like this:
 // db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
 db.Event = require("./event.model1")(sequelize, Sequelize);
-db.EventInvite = require("./eventinvite.model.js")(sequelize, Sequelize);
+db.EventInvite = require("./event-invite.model.js")(sequelize, Sequelize);
+db.EventRequest = require("./event-request.model.js")(sequelize,Sequelize);
 
 db.EventInvite.belongsTo(db.Event);
+db.EventRequest.belongsTo(db.Event);
 
 module.exports = db;
