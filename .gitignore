@@ -104,4 +104,4 @@ dist
 .tern-port
 
 #Configurare baza de date
-./config/db.config.js
+app/config/db.config.js
