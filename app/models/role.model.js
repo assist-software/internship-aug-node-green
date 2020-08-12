@@ -15,9 +15,11 @@ module.exports = (sequelize, Sequelize) => {
         isAdmin: {
             type: Sequelize.BOOLEAN,
             allowNull: false
-        }
+        },
+        
     });
-    return Role.sync().then(() => {
+    
+    Role.sync().then(() => {
         Role.create({
             name: 'Administrator',
             isAdmin: true
