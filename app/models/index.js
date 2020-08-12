@@ -31,16 +31,14 @@ sequelize
 
 // Define all models here like this:
 // db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
-<<<<<<< HEAD
 db.Event = require("./event.model1")(sequelize, Sequelize);
 db.EventInvite = require("./event-invite.model.js")(sequelize, Sequelize);
 db.EventRequest = require("./event-request.model.js")(sequelize,Sequelize);
 
 db.EventInvite.belongsTo(db.Event);
 db.EventRequest.belongsTo(db.Event);
-=======
 db.Role = require("./role.model.js")(sequelize, Sequelize);
-<<<<<<< HEAD
+
 db.Sport=require("./sport.model.js")(sequelize,Sequelize);
 db.Club=require("./club.model.js")(sequelize,Sequelize);
 db.ClubInvite = require("./club-invite.model.js")(sequelize, Sequelize);
@@ -62,7 +60,6 @@ db.User.belongsTo(db.Sport, {
 db.User.belongsTo(db.Sport, {
   as: 'secondary_sport'
 });
->>>>>>> 94d47b997b5a467a5dba4d42c179b3c2a71042dd
 
 >>>>>>> bc69a5742830f7a43e7f598d3a53e8cf6c10b305
 module.exports = db;
