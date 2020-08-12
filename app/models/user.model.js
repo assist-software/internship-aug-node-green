@@ -56,8 +56,8 @@ module.exports = (sequelize, Sequelize) => {
             weight: 75,
             age: 25,
             roleId: '1',
-            primarySportId: '1',
-            secondarySportId: '2'
+            //primarySportId: '1',
+            //secondarySportId: '2'
         })
     });
     return User;

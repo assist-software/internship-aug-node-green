@@ -34,16 +34,25 @@ sequelize
 db.Role = require("./role.model.js")(sequelize, Sequelize);
 db.Sport = require("./sport.model.js")(sequelize,Sequelize);
 db.User = require("./user.model.js")(sequelize, Sequelize);
+db.Workout = require("./workout.model.js")(sequelize, Sequelize);
 
 // User assosiations
 console.log(db.Sport);
 db.User.belongsTo(db.Role);
 
 db.User.belongsTo(db.Sport, {
-  as: 'primary_sport'
+  as: 'primary_sport',
+  allowNull: true
 });
 db.User.belongsTo(db.Sport, {
-  as: 'secondary_sport'
+  as: 'secondary_sport',
+  allowNull: true
 });
+
+//Workout assosiations
+db.Workout.belongsTo(db.User, {
+  as: 'user',
+  allowNull: false
+})
 
 module.exports = db;
