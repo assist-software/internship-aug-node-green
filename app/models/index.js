@@ -32,5 +32,18 @@ sequelize
 // Define all models here like this:
 // db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
 db.Role = require("./role.model.js")(sequelize, Sequelize);
-db.Sport=require("./sport.model.js")(sequelize,Sequelize);
+db.Sport = require("./sport.model.js")(sequelize,Sequelize);
+db.User = require("./user.model.js")(sequelize, Sequelize);
+
+// User assosiations
+console.log(db.Sport);
+db.User.belongsTo(db.Role);
+
+db.User.belongsTo(db.Sport, {
+  as: 'primary_sport'
+});
+db.User.belongsTo(db.Sport, {
+  as: 'secondary_sport'
+});
+
 module.exports = db;
