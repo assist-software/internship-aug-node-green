@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const db = require("./app/models");
+const db = require("./app/models/index");
 
 const app = express();
 
@@ -15,8 +15,9 @@ app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 // if you need to drop the existing table and resync database use {force: true}
- db.sequelize.sync({ force: true })
-//db.sequelize.sync();
+//db.sequelize.sync({ force: true })
+db.sequelize.sync();
+
 
 // simple route
 app.get("/", (req, res) => {
