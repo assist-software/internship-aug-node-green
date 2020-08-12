@@ -17,7 +17,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false
         }
     });
-    return Role.sync().then(() => {
+    Role.sync({force:true}).then(() => {
         Role.create({
             name: 'Administrator',
             isAdmin: true

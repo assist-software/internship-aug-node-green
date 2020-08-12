@@ -33,4 +33,10 @@ sequelize
 // db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
 db.Role = require("./role.model.js")(sequelize, Sequelize);
 db.Sport=require("./sport.model.js")(sequelize,Sequelize);
+db.Club=require("./club.model.js")(sequelize,Sequelize);
+db.ClubInvite = require("./club-invite.model.js")(sequelize, Sequelize);
+db.ClubRequest = require("./club-request.model.js")(sequelize, Sequelize);
+
+db.ClubInvite.belongsTo(db.Club);
+db.ClubRequest.belongsTo(db.Club);
 module.exports = db;
