@@ -10,16 +10,12 @@ module.exports=(sequelize,Sequelize)=>{
         name: {
             type: Sequelize.STRING,
             allowNull: false
-        },
-        ownerId: {
-            type: Sequelize.INTEGER,
-            allowNull: true
         }
+        
     });
-    Club.sync({force:true}).then(()=>{
+    Club.sync().then(()=>{
         Club.create({
-            name:'Atletism',
-            ownerId: 4
+            name:'Atletism'
         })
     })
     return Club;

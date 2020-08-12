@@ -42,6 +42,8 @@ db.EventMember = require("./event-member.model.js")(sequelize,Sequelize);
 
 db.ClubInvite = require("./club-invite.model.js")(sequelize, Sequelize);
 db.ClubRequest = require("./club-request.model.js")(sequelize, Sequelize);
+db.ClubMember = require("./club-member.model.js")(sequelize, Sequelize);
+
 
 
 
@@ -57,8 +59,29 @@ db.Event.belongsTo(db.Club,{allowNull: false});
 db.EventMember.belongsTo(db.User,{allowNull: false});
 db.EventMember.belongsTo(db.Event,{allowNull: false});
 
-db.ClubInvite.belongsTo(db.Club);
-db.ClubRequest.belongsTo(db.Club);
+
+
+
+//club assosiations
+db.Club.belongsTo(db.User,{as:'owner'});
+
+db.ClubInvite.belongsTo(db.Club,{
+  allowNull:false
+});
+
+db.ClubRequest.belongsTo(db.User),{
+  allowNull:false
+};
+db.ClubRequest.belongsTo(db.Club,{
+  allowNull:false
+});
+
+db.ClubMember.belongsTo(db.User),{
+  allowNull:false
+};
+db.ClubMember.belongsTo(db.Club,{
+  allowNull:false
+});
 
 
 // User assosiations
