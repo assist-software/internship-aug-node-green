@@ -103,5 +103,10 @@ dist
 # TernJS port file
 .tern-port
 
+<<<<<<< HEAD
+#Configurare baza de date
+.app/config/db.config.js
+=======
 # Database config
 .app/config/db.config.js
+>>>>>>> 94d47b997b5a467a5dba4d42c179b3c2a71042dd

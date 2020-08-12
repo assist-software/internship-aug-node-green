@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
 
-    const ClubRequest = sequelize.define("clubrequest", {
+    const ClubMember = sequelize.define("clubmember", {
         id: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
@@ -8,6 +8,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false
         },
         
+        
     });
-    return ClubRequest;
+    return ClubMember;
 }
