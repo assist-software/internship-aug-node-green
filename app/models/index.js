@@ -31,23 +31,36 @@ sequelize
 
 // Define all models here like this:
 // db.tutorials = require("./tutorial.model.js")(sequelize, Sequelize);
-db.Event = require("./event.model1")(sequelize, Sequelize);
-db.EventInvite = require("./event-invite.model.js")(sequelize, Sequelize);
-db.EventRequest = require("./event-request.model.js")(sequelize,Sequelize);
-
-db.EventInvite.belongsTo(db.Event);
-db.EventRequest.belongsTo(db.Event);
 db.Role = require("./role.model.js")(sequelize, Sequelize);
-
+db.User = require("./user.model.js")(sequelize, Sequelize);
 db.Sport=require("./sport.model.js")(sequelize,Sequelize);
 db.Club=require("./club.model.js")(sequelize,Sequelize);
+db.Event = require("./event.model")(sequelize, Sequelize);
+db.EventInvite = require("./event-invite.model.js")(sequelize, Sequelize);
+db.EventRequest = require("./event-request.model.js")(sequelize,Sequelize);
+db.EventMember = require("./event-member.model")
+db.Sport = require("./sport.model.js")(sequelize,Sequelize);
 db.ClubInvite = require("./club-invite.model.js")(sequelize, Sequelize);
 db.ClubRequest = require("./club-request.model.js")(sequelize, Sequelize);
 
+
+
+//event assosiations
+
+db.EventInvite.belongsTo(db.Event);
+db.EventRequest.belongsTo(db.Event);
+db.EventRequest.belongsTo(db.User,{allowNull: false});
+db.Event.belongsTo(db.Sport, {allowNull: false});
+db.Event.belongsTo(db.Club,{allowNull: false});
+
+db.EventMember.belongsTo(db.Event,{allowNull: false});
+db.EventMember.belongsTo(db.User,{allowNull: false});
+
+
+
 db.ClubInvite.belongsTo(db.Club);
 db.ClubRequest.belongsTo(db.Club);
-db.Sport = require("./sport.model.js")(sequelize,Sequelize);
-db.User = require("./user.model.js")(sequelize, Sequelize);
+
 
 // User assosiations
 console.log(db.Sport);
