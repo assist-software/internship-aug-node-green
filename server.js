@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const db = require("./app/models/index");
+const clubInviteModel = require("./app/models/club-invite.model");
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello world!" });
 });
 
+require("./app/routes/club.routes")(app);
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
