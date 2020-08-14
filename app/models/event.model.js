@@ -26,7 +26,7 @@ module.exports = (sequelize , Sequelize) => {
         },
         event_cover: {
             type: Sequelize.BLOB,
-            allowNull: false
+            allowNull: true
         }
     });
 
