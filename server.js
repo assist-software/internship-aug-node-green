@@ -22,12 +22,50 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
+// user express - validator
+//app.use(expressValidator);
 // initialize validator
+
+
 //app.use(validator());
 //initialize passport
 app.use(auth.initialize());
 // if you need to drop the existing table and resync database use {force: true}
-//db.sequelize.sync({ force: true })
+/*
+db.sequelize.sync({ force: true }).then(() => {
+  db.Role.create({
+      name: 'Administrator',
+      isAdmin: true
+  });
+  db.Role.create({
+    name: 'Coach',
+    isAdmin: false
+  });
+  db.Role.create({
+    name: 'Athlete',
+    isAdmin: false
+  });
+  db.Sport.create({
+    type:'Running'
+  });
+  db.Sport.create({
+    type:'Cicling'
+  });
+  db.Sport.create({
+    type:'TeamSports'
+  });
+  db.Sport.create({
+    type:'WeightLifting'
+  });
+  db.User.create({
+    first_name: 'admin',
+    last_name: 'admin',
+    email: 'admin@sport.ro',
+    password: 'admin2020',
+    roleId: 1
+  })
+});
+*/
 db.sequelize.sync();
 
 
@@ -36,6 +74,7 @@ app.get("/", (req, res) => {
   res.json({ message: "Hello world!" });
 });
 
+require('./app/routes/user.route.js')(app);
 // authentification routes
 app.use(authRoutes);
 

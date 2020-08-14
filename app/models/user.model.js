@@ -44,7 +44,6 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: true
        }
     });
-
     User.sync().then(() => {
         User.create({
             first_name: 'John',
@@ -93,4 +92,4 @@ module.exports = (sequelize, Sequelize) => {
         })
     });
     return User;
-}
+};

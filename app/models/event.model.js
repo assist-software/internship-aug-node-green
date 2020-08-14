@@ -20,15 +20,7 @@ module.exports = (sequelize , Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
-        club_id: {
-            type: Sequelize.INTEGER,
-            allowNull: false
-        },
         radius: {
-            type: Sequelize.INTEGER,
-            allowNull: false
-        },
-        sport_id: {
             type: Sequelize.INTEGER,
             allowNull: false
         },
@@ -36,7 +28,7 @@ module.exports = (sequelize , Sequelize) => {
             type: Sequelize.BLOB,
             allowNull: true
         }
-    },{underscored: true});
+    });
 
     return Event;
 };
