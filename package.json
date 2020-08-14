@@ -17,9 +17,11 @@
   },
   "homepage": "https://github.com/assist-software/internship-aug-node-green#readme",
   "dependencies": {
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-validator": "^6.6.1",
     "pg": "^8.3.0",
     "pg-hstore": "^2.3.3",
     "sequelize": "^6.3.4"

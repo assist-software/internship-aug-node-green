@@ -11,21 +11,5 @@ module.exports=(sequelize,Sequelize)=>{
             allowNull:false
         }
     });
-    
-    Sport.sync().then(()=>{
-        Sport.create({
-            type:'Running'
-        });
-        Sport.create({
-            type:'Cicling'
-        });
-        Sport.create({
-            type:'TeamSports'
-        });
-        Sport.create({
-            type:'WeightLifting'
-        });
-
-    })
     return Sport;
 }

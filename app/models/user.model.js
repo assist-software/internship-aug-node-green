@@ -43,22 +43,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.BLOB,
         allowNull: true
        }
-    });
-
-    User.sync().then(() => {
-        User.create({
-            first_name: 'John',
-            last_name: 'Andrew',
-            email: 'johnandrew@andrew.com',
-            password: '12345',
-            gender: 'm',
-            height: 185,
-            weight: 75,
-            age: 25,
-            roleId: '1',
-            //primarySportId: '1',
-            //secondarySportId: '2'
-        })
-    });
+    });  
     return User;
 }
