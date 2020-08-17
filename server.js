@@ -30,6 +30,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(validator());
 //initialize passport
 app.use(auth.initialize());
+
+
 // if you need to drop the existing table and resync database use {force: true}
 /*
 db.sequelize.sync({ force: true }).then(() => {
@@ -63,10 +65,27 @@ db.sequelize.sync({ force: true }).then(() => {
     email: 'admin@sport.ro',
     password: 'admin2020',
     roleId: 1
-  })
+  });
+  db.Club.create({
+    name: 'Footbal Club Suceava'
+  });
+  db.Club.create({
+    name: 'Footbal Club Botosani'
+  });
+  db.Event.create({
+    name: 'Event1',
+    date: new Date(),
+    time: new Date().toLocaleTimeString(),
+    description: 'description1',
+    location: 'Suceava',
+    //clubId: 1,
+    radius: 10,
+    sportId: 1,
+    
+  });
 });
 */
-db.sequelize.sync();
+//db.sequelize.sync();
 
 
 // simple route
@@ -75,6 +94,10 @@ app.get("/", (req, res) => {
 });
 
 require('./app/routes/user.route.js')(app);
+
+require('./app/routes/workout.route.js')(app);
+
+/*
 // authentification routes
 app.use(authRoutes);
 
@@ -86,7 +109,7 @@ app.get('/checkAuthorization', auth.authenticate(), (req, res) => {
     message: "Authorized"
   });
 });
-
+*/
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

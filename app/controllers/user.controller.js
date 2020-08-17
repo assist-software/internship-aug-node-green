@@ -114,8 +114,6 @@ exports.delete = (req, res) => {
             message: "Could not delete User with id=" + id
           });
         });
-
-
 };
 
 //search User by first_name or last_name
