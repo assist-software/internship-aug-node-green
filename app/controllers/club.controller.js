@@ -51,6 +51,7 @@ exports.update=(req,res)=>{
             });
         }
     })
+
     
     Club.update(req.body,{
         where:{id: id}

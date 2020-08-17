@@ -18,20 +18,5 @@ module.exports = (sequelize, Sequelize) => {
         },
         
     });
-    
-    Role.sync().then(() => {
-        Role.create({
-            name: 'Administrator',
-            isAdmin: true
-        })
-        Role.create({
-            name: 'Coach',
-            isAdmin: false
-        });
-        Role.create({
-            name: 'Athlete',
-            isAdmin: false
-        })
-    })
     return Role;
 }

@@ -20,23 +20,15 @@ module.exports = (sequelize , Sequelize) => {
             type: Sequelize.STRING,
             allowNull: false
         },
-        club_id: {
-            type: Sequelize.INTEGER,
-            allowNull: false
-        },
         radius: {
-            type: Sequelize.INTEGER,
-            allowNull: false
-        },
-        sport_id: {
             type: Sequelize.INTEGER,
             allowNull: false
         },
         event_cover: {
             type: Sequelize.BLOB,
-            allowNull: false
+            allowNull: true
         }
-    },{underscored: true});
+    });
 
     return Event;
 };

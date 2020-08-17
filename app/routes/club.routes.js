@@ -3,7 +3,6 @@ module.exports= app => {
     const { userValidationRules,validate } = require('../controllers/validator.js')
     
     var router=require("express").Router();
-
     router.post("/create",userValidationRules(),validate,clubs.create);
     router.put("/:id",userValidationRules(),validate,clubs.update);
     router.get("/:id",clubs.findOne);
