@@ -31,42 +31,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //initialize passport
 app.use(auth.initialize());
 // if you need to drop the existing table and resync database use {force: true}
-/*
-db.sequelize.sync({ force: true }).then(() => {
-  db.Role.create({
-      name: 'Administrator',
-      isAdmin: true
-  });
-  db.Role.create({
-    name: 'Coach',
-    isAdmin: false
-  });
-  db.Role.create({
-    name: 'Athlete',
-    isAdmin: false
-  });
-  db.Sport.create({
-    type:'Running'
-  });
-  db.Sport.create({
-    type:'Cicling'
-  });
-  db.Sport.create({
-    type:'TeamSports'
-  });
-  db.Sport.create({
-    type:'WeightLifting'
-  });
-  db.User.create({
-    first_name: 'admin',
-    last_name: 'admin',
-    email: 'admin@sport.ro',
-    password: 'admin2020',
-    roleId: 1
-  })
+db.sequelize.sync({ force: true })
+  .then(() => {
+    let hardcodedData = require('./app/config/db.hardcodeData');
+    for(let i = 0; i < hardcodedData.length; i++) {
+      let data = hardcodedData[i];
+      //data();
+   }
 });
-*/
-db.sequelize.sync();
+//db.sequelize.sync();
 
 
 // simple route
