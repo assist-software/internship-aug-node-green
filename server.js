@@ -27,6 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // initialize validator
 
 
+
 //app.use(validator());
 //initialize passport
 app.use(auth.initialize());
@@ -53,10 +54,10 @@ require('./app/routes/user.route.js')(app);
 
 require('./app/routes/workout.route.js')(app);
 
-/*
+
 // authentification routes
 app.use(authRoutes);
-
+/*
 // event api routes
 app.use('/api/event', eventRoutes);
 

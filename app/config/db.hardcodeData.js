@@ -25,26 +25,17 @@ let createSportTeamsports = db.Sport.create({
 let createSportWeightlifting = db.Sport.create({
   type:'WeightLifting'
 });
-let createUserAdmin = db.User.create({
-  first_name: 'admin',
-  last_name: 'admin',
-  email: 'admin@sport.ro',
-  password: 'admin2020',
-  roleId: 1
-})
 
 let createUserJohn = db.User.create({
     first_name: 'John',
     last_name: 'Andrew',
     email: 'johnandrew@andrew.com',
-    password: bcrypt.hashSync('12345', 8),
+    password: bcrypt.hashSync('12345', 10),
     gender: 'm',
     height: 185,
     weight: 75,
     age: 25,
-    roleId: '1',
-    //primarySportId: '1',
-    //secondarySportId: '2'
+    roleId: '1'
 });
 
 
@@ -53,28 +44,34 @@ let createUserMike = db.User.create({
     first_name: 'Mike',
     last_name: 'Barrely',
     email: 'mikebarrely@barrely.com',
-    password: bcrypt.hashSync('12345', 8),
+    password: bcrypt.hashSync('12345', 10),
     gender: 'm',
     height: 185,
     weight: 75,
     age: 25,
-    roleId: '2',
-    //primarySportId: '1',
-    //secondarySportId: '2'
+    roleId: '2'
 });
 
 let createUserSarah = db.User.create({
     first_name: 'Sarah',
     last_name: 'Johnes',
     email: 'sarahjohnes@johnes.com',
-    password: bcrypt.hashSync('12345', 8),
+    password: bcrypt.hashSync('12345', 10),
     gender: 'm',
     height: 185,
     weight: 75,
     age: 25,
-    roleId: '3',
-    //primarySportId: '1',
-    //secondarySportId: '2'
+    roleId: '3'
+});
+
+let createUserValentin = db.User.create({
+  first_name: 'Valentin',
+  last_name: 'Stratan',
+  email: 'valentin.stratan83@gmail.com',
+  password: bcrypt.hashSync('12345', 10),
+  gender: 'm',
+  age: 25,
+  roleId: '1'
 });
 
 let createClubRunners = db.Club.create({
@@ -132,11 +129,11 @@ module.exports = [
     createSportRunning,
     createSportTeamsports,
     createSportWeightlifting,
-    createUserAdmin,
     // Developement hardcoded data
     createUserJohn,
     createUserMike,
     createUserSarah,
+    createUserValentin,
     createClubRunners,
     createClubTeamers,
     createClubLifters,
