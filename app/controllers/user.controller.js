@@ -4,8 +4,6 @@ const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 
 const User = db.User;
-
-
 //create User method
 exports.create = (req ,res, next) => {
     //Validate request 
