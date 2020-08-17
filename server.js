@@ -30,6 +30,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(validator());
 //initialize passport
 app.use(auth.initialize());
+
+
 // if you need to drop the existing table and resync database use {force: true}
 db.sequelize.sync({ force: true })
   .then(() => {
@@ -48,6 +50,10 @@ app.get("/", (req, res) => {
 });
 
 require('./app/routes/user.route.js')(app);
+
+require('./app/routes/workout.route.js')(app);
+
+/*
 // authentification routes
 app.use(authRoutes);
 
@@ -59,7 +65,7 @@ app.get('/checkAuthorization', auth.authenticate(), (req, res) => {
     message: "Authorized"
   });
 });
-
+*/
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

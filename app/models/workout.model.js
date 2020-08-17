@@ -11,7 +11,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.DOUBLE,
             allowNull: false
         },
-        hearth_rate: {
+        heart_rate: {
             type: Sequelize.DOUBLE,
             allowNull: false
         },
