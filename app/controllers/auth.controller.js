@@ -5,6 +5,7 @@ const Role = db.Role;
 
 const Op = db.Sequelize.Op;
 
+const mail = require('../utils/email.utils');
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 
@@ -58,4 +59,29 @@ exports.login = (req, res) => {
         res.send({err: err.message});
     });
 
+}
+
+exports.reset = (req, res) => {
+    User.findOne({
+        where: {
+            email: req.body.email
+        }
+    })
+    .then(user => {
+        if(!user) {
+            return res.status(404).send({message: "User with this email not found!!"});
+        }
+        //Generating a random number from 10000 to 99999
+        let newPass = Math.floor(Math.random()*99999) +10000; 
+        let newHashPass = bcrypt.hashSync(`${newPass}`, 10);
+        
+        user.password = newHashPass;
+        user.save();
+        mail(`You new password is ${newPass}`, [user.email]);
+
+        return res.send({message: 'password reset succes'});
+    })
+    .catch(err => {
+        res.status(404).send({error: err.message});
+    });
 }
