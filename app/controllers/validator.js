@@ -1,22 +1,15 @@
 const { body, validationResult } = require('express-validator')
-const userValidationRulesCreate= () => {
+const db=require("../models");
+const Club=db.Club;
+const userValidationRules = () => {
   return [
-    body('name').isString(),
-    body('name').exists(),
-    body('ownerId').optional(),
-    body('ownerId').isDecimal({min:1,max:2})
+    
+    body('ownerId').optional().isInt({min:1,max:2}),
+    body('name').exists().notEmpty().isString()
+    
   ]
 }
-const userValidationRulesUpdate =()=>{
-    return[
-        body('id').isDecimal(),
-        body('id').exists(),
-        body('name').isString(),
-        body('name').exists(),
-        body('ownerId').optional(),
-        body('ownerId').isDecimal({min:1,max:2})
-    ]
-}
+
 
 const validate = (req, res, next) => {
   const errors = validationResult(req)
@@ -32,7 +25,6 @@ const validate = (req, res, next) => {
 }
 
 module.exports = {
-  userValidationRulesCreate,
-  userValidationRulesUpdate,
-  validate,
+  userValidationRules,
+  validate
 }

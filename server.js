@@ -2,7 +2,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const db = require("./app/models/index");
-const clubInviteModel = require("./app/models/club-invite.model");
 
 const app = express();
 

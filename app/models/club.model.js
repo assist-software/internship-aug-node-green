@@ -13,10 +13,5 @@ module.exports=(sequelize,Sequelize)=>{
         }
         
     });
-    Club.sync().then(()=>{
-        Club.create({
-            name:'Atletism'
-        })
-    })
     return Club;
 }
