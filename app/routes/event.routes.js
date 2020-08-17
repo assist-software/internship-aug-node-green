@@ -15,7 +15,7 @@ Router.post('/search', eventController.search);
 Router.get('/:eventId', eventController.get);
 
 // Update data of an event
-Router.put('/:eventId', eventController.update);
+Router.put('/:eventId', eventController.updateValidator(), eventController.validate, eventController.update);
 
 // Delete an event by his Id
 Router.delete('/:eventId', eventController.delete);
