@@ -29,7 +29,7 @@ let createUserAdmin = db.User.create({
   first_name: 'admin',
   last_name: 'admin',
   email: 'admin@sport.ro',
-  password: 'admin2020',
+  password: bcrypt.hashSync('admin2020',10),
   roleId: 1
 })
 
@@ -44,7 +44,7 @@ let createUserJohn = db.User.create({
     age: 25,
     roleId: '1',
     //primarySportId: '1',
-    //secondarySportId: '2'
+    secondarySportId: '2'
 });
 
 
