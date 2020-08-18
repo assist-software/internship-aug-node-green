@@ -1,23 +1,16 @@
-const express = require('express');
-const db = require('../models/index.js');
-const eventController = require('../controllers/event.controller');
-
-const Router = express.Router();
-const Clubs = db.Club;
-
-// Create event
-Router.post('/create',eventController.createValidator(), eventController.validate, eventController.create);
-
-// Returns a list of events based on post data
-Router.post('/search', eventController.search);
-
-// Returns an event by his Id
-Router.get('/:eventId', eventController.get);
-
-// Update data of an event
-Router.put('/:eventId', eventController.updateValidator(), eventController.validate, eventController.update);
-
-// Delete an event by his Id
-Router.delete('/:eventId', eventController.delete);
-
-module.exports = Router;
+module.exports = app => {
+    const express = require('express');
+    const db = require('../models/index.js');
+    const authJwt = require('../middlewares/authJwt');
+    const event = require('../controllers/event.controller');
+    const auth = require('../config/passport.config')();
+    app.use(auth.initialize());
+    const Router = express.Router();
+    const Clubs = db.Club;
+    Router.post('/create', auth.authenticate(), event.createValidator(), event.validate, event.create);
+    Router.post('/search', auth.authenticate(), event.search);
+    Router.get('/:eventId', auth.authenticate(), event.get);
+    Router.put('/:eventId', auth.authenticate(), event.updateValidator(), event.validate, event.update);
+    Router.delete('/:eventId', auth.authenticate(), event.delete);
+    app.use('/api/event', Router);
+};
