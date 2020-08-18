@@ -38,6 +38,18 @@ let createUserJohn = db.User.create({
     roleId: '1'
 });
 
+let createUserIulian = db.User.create({
+  first_name: 'Udisteanu',
+  last_name: 'Iulian-Elisei',
+  email: 'udisteanu.iulian@outlook.com',
+  password: bcrypt.hashSync('12345', 10),
+  gender: 'm',
+  height: 185,
+  weight: 75,
+  age: 23,
+  roleId: '1'
+});
+
 
 
 let createUserMike = db.User.create({
@@ -131,6 +143,7 @@ module.exports = [
     createSportWeightlifting,
     // Developement hardcoded data
     createUserJohn,
+    createUserIulian,
     createUserMike,
     createUserSarah,
     createUserValentin,
