@@ -28,6 +28,15 @@ exports.create = async (req, res) => {
             return;
         }
         else {
+            const eventExists = await EventRequest.findOne({
+                where: {
+                    userId: userResult.id,
+                    eventId: eventResult.id
+                }
+            });
+            if (eventExists) {
+                throw new Error('Request exists!!');
+            }
             //check membership
             const userMember = await EventMember.findOne({
                 where: {
@@ -36,19 +45,14 @@ exports.create = async (req, res) => {
                 }
             });
             if (userMember) {
-                res.status(500).json({ message: 'Already member! ' });
+                throw new Error('Already member!');
             }
             else {
                 EventRequest.create({
                     userId: req.body.userId,
                     eventId: req.body.eventId
-                })
-                    .then(data => {
-                        res.status(200).json(data);
-                    })
-                    .catch(err => {
-                        res.status(500).json({ message: err.message });
-                    });
+                });
+                res.status(200).json();
             }
         }
     }
@@ -69,19 +73,21 @@ exports.accept = async (req, res, next) => {
         });
 
         if (resultEvent === null) {
-            res.status(404).json({ message: 'Event-request nor found!!' });
+            res.status(404).json();
+            return;
         }
         else {
             req.body.eventId = resultEvent.eventId;
             req.body.userId = resultEvent.userId;
             next();
-            EventRequest.sync().then(
-                EventRequest.destroy({
-                    where: {
-                        id: id
-                    }
-                })
-            );
+
+            EventRequest.destroy({
+                where: {
+                    id: id
+                }
+            });
+            res.status(200).json();
+
         }
 
     }
@@ -92,37 +98,43 @@ exports.accept = async (req, res, next) => {
 
 
 //decline request
-exports.decline = (req, res) => {
-    EventRequest.destroy({
-        where: {
-            id: req.params.requestId
+exports.decline = async (req, res) => {
+    try {
+        const id = req.params.requestId;
+        const requestResult = await EventRequest.findOne({
+            where: {
+                id: id
+            }
+        });
+        if (requestResult) {
+            EventRequest.destroy({
+                where: {
+                    id: requestResult.id
+                }
+            });
+            res.status(200).json();
         }
-    })
-        .then(num => {
-            if (num === 1) {
-                res.status(200).json();
-            }
-            else {
-                res.status(404).json();
-            }
-        })
-        .catch(err => {
-            res.status(500).json({ message: err.message });
-        })
+        else {
+            res.status(404).json();
+        }
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 };
 // get a list of evet-request by eventId
-exports.list = (req, res) => {
-    EventRequest.findAll({
-        where: {
-            eventId: req.params.eventId
-        }
-    })
-        .then(requests => {
-            res.status(200).json(requests);
-        })
-        .catch(err => {
-            res.status(500).json({ message: err.message });
-        })
+exports.list = async (req, res) => {
+    try {
+        const data = await EventRequest.findAll({
+            where: {
+                eventId: req.params.eventId
+            }
+        });
+        res.status(200).json(data);
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 };
 
 
@@ -134,19 +146,7 @@ exports.validationRules = method => {
     switch (method) {
         case 'create': {
             return [
-                body(['userId', 'eventId']).exists().isInt().custom((value, { req }) => {
-                    return EventRequest.findOne({
-                        where: {
-                            userId: req.body.userId,
-                            eventId: req.body.eventId
-                        }
-                    })
-                        .then(data => {
-                            if (data) {
-                                throw new Error('Already exists!');
-                            }
-                        });
-                })
+                body(['userId', 'eventId']).exists().isInt()
             ]
             break;
         }

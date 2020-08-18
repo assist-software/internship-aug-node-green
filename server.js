@@ -6,31 +6,20 @@ const auth = require("./app/config/passport.config")();
 const passport = require('passport');
 const {authJwt} = require('./app/middlewares/authJwt');
 const validator = require('express-validator');
-
-
-// API Routes
-const authRoutes = require('./app/routes/auth.routes');
-const eventRoutes = require('./app/routes/event.routes');
+const app = express();
 
 const corsOptions = {
   origin: "http://localhost:8081"
 };
 
-const app = express();
+
 app.use(cors(corsOptions));
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
-// user express - validator
-//app.use(expressValidator);
-// initialize validator
-
-
-//app.use(validator());
 //initialize passport
 //app.use(auth.initialize());
-
 
 // if you need to drop the existing table and resync database use {force: true}
 /*
@@ -47,12 +36,13 @@ db.sequelize.sync();
 
 
 // simple route
-app.get("/", (req, res) => {
-  res.json({ message: "Hello world!" });
-});
-
+app.get("/", (req, res) => { res.json({ message: "Hello world!" });});
+// API Routes
+require('./app/routes/auth.routes')(app);
+require('./app/routes/event.routes')(app);
+require('./app/routes/club-request.routes')(app);
 require('./app/routes/user.route.js')(app);
-
+require('./app/routes/club.routes.js')(app);
 require('./app/routes/workout.route.js')(app);
 
 require('./app/routes/event-member.routes.js')(app);
@@ -74,6 +64,7 @@ app.get('/checkAuthorization', auth.authenticate(), (req, res) => {
   });
 });
 */
+app.get('/checkAuthenticate', auth.authenticate());
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

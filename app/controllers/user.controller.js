@@ -28,7 +28,7 @@ exports.create = (req ,res, next) => {
         heigt,
         weight,
         age,
-        profile_photo
+        profile_photo: req.file.path
     }).then(data => {
         res.status(200).json(data);
     })

@@ -1,6 +1,7 @@
 const db = require('../models');
 
 const { body, validationResult } = require('express-validator');
+const sendEmail = require('../utils/email.utils.js');
 
 const EventInvite = db.EventInvite;
 const EventMember = db.EventMember;
@@ -27,6 +28,16 @@ exports.create = async (req, res) => {
             return;
         }
         else {
+            const inviteExists = await EventInvite.findOne({
+                where: {
+                    eventId: eventResult.id,
+                    email: userResult.email
+                }
+            });
+            if(inviteExists) {
+                res.status(500).json({ message: 'Invitation exists!'});
+                return;
+            }
             //check membership
             const userMember = await EventMember.findOne({
                 where: {
@@ -38,16 +49,18 @@ exports.create = async (req, res) => {
                 throw new Error('Already member');
             }
             else {
-                EventInvite.create({
+                const eventInvite = await EventInvite.create({
                     email: req.body.email,
                     eventId: req.body.eventId
-                })
-                    .then(data => {
-                        res.status(200).json(data);
-                    })
-                    .catch(err => {
-                        res.status(500).json({ message: err.message });
-                    });
+                });
+                /*
+                const message = `Buna ziua,
+                    Dorim sa va invitam la evenimentul: ${eventResult.name}.
+                    Evenimentul are loc pe data: ${eventResult.date} la ora ${eventResult.time}.
+                    Va asteptam!!!`;
+                sendEmail(message, [userResult.email]);
+                */
+                res.status(200).json();
             }
         }
     }
@@ -55,7 +68,7 @@ exports.create = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
-
+// accept event-invite
 exports.accept = async (req, res, next) => {
 
 
@@ -108,40 +121,45 @@ exports.accept = async (req, res, next) => {
 
 
 //decline event-invite
-exports.decline = (req, res) => {
-    const id = req.params.inviteId;
-    EventInvite.destroy({
-        where: {
-            id: id
+exports.decline = async (req, res) => {
+    try {
+        const id = req.params.inviteId;
+        const eventResult = await EventInvite.findOne({
+            where: {
+                id: id
+            }
+        });
+        if (eventResult) {
+            EventInvite.destroy({
+                where: {
+                    id: eventResult.id
+                }
+            });
+            res.status(200).json();
         }
-    })
-        .then(num => {
-            if (num === 1) {
-                res.status(200).json();
-            }
-            else {
-                res.status(404).json();
-            }
-        })
-        .catch(err => {
-            res.status(500).json({ message: err.message });
-        })
+        else {
+            res.status(404).json();
+        }
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 };
 
 //get a list of invites by eventId
-exports.list = (req, res) => {
-    const id = req.params.eventId;
-    EventInvite.findAll({
-        where: {
-            eventId: id
-        }
-    })
-        .then(data => {
-            res.status(200).json(data);
-        })
-        .catch(err => {
-            res.status(500).json({ message: err.message });
+exports.list = async (req, res) => {
+    try {
+        const id = req.params.eventId;
+        const data = await EventInvite.findAll({
+            where: {
+                eventId: id
+            }
         });
+        res.status(200).json(data);
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 };
 
 
@@ -151,19 +169,7 @@ exports.validationRules = method => {
     switch (method) {
         case 'create': {
             return [
-                body('eventId').exists().isInt().custom((value, { req }) => {
-                    return EventInvite.findOne({
-                        where: {
-                            email: req.body.email,
-                            eventId: req.body.eventId
-                        }
-                    })
-                        .then(data => {
-                            if (data) {
-                                throw new Error('Already exists!');
-                            }
-                        });
-                }),
+                body('eventId').exists().isInt(),
                 body('email').exists().isEmail()
             ]
             break;

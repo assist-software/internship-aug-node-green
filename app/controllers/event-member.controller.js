@@ -33,20 +33,14 @@ exports.create = async (req, res, next) => {
                 }
             });
             if (userExists) {
-                res.status(500).json({ message: 'Already member !' });
-                return;
+                throw new Error('Already member !');
             }
             else {
                 EventMember.create({
                     userId: req.body.userId,
                     eventId: req.body.eventId
-                })
-                    .then(data => {
-                        res.status(200).json(data);
-                    })
-                    .catch(err => {
-                        res.status(500).json({ message: err.message });
-                    });
+                });
+                res.status(200).json();
             }
         }
     }
@@ -81,20 +75,15 @@ exports.remove = async (req, res) => {
 };
 
 //get a list of members for an event
-exports.list = (req, res) => {
+exports.list = async (req, res) => {
 
-    EventMember.findAll({
+    const data = await EventMember.findAll({
         where: {
             eventId: req.params.eventId
         },
         attributes: ['userId']
-    })
-        .then(data => {
-            res.status(200).json(data);
-        })
-        .catch(err => {
-            res.status(500).json({ message: err.message });
-        });
+    });
+    res.status(200).json(data);
 }
 
 
