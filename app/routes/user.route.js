@@ -1,6 +1,7 @@
 module.exports = app => {
     const auth = require('../config/passport.config')();
     app.use(auth.initialize());
+    
     /*
     // Photo upoading code
     const multer = require('multer');
@@ -13,8 +14,9 @@ module.exports = app => {
             cb(null, file.originalname);
         }
     });
-    const upload  = multer({storage: storage}); */
-
+    
+    const upload  = multer({storage: storage}); 
+    */
     const users = require("../controllers/user.controller.js");
 
     const router = require('express').Router();

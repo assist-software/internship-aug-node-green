@@ -74,7 +74,6 @@ exports.reset = (req, res) => {
         if(!user) {
             return res.status(404).send({message: "User with this email not found!!"});
         }
-        //Generating a random number from 10000 to 99999
         let newPass = Math.floor(Math.random()*99999) +10000; 
         let newHashPass = bcrypt.hashSync(`${newPass}`, 10);
         

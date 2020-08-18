@@ -14,6 +14,26 @@ exports.create = (req ,res, next) => {
         return;
     }
 
+    /*
+    const {img_name, img_data} = req.files.pic;
+    if(img_name && img_data) {
+        User.create({
+            profile_photo: img_data
+        })
+    }
+
+    const id = req.parmas.id;
+    User.findOne({
+        where: {
+            id: id
+        }
+    })
+    .then(user => {
+        if(user) {
+            res.send({image: user.profile_photo})
+        }
+    })
+    */
     const { first_name, last_name, email, password, roleId, gender, primarySport, secondarySport, heigt, weight, age, profile_photo} = req.body;
     const hashedPassword = bcrypt.hashSync(password,10);
     User.create({
@@ -28,8 +48,9 @@ exports.create = (req ,res, next) => {
         heigt,
         weight,
         age,
-        profile_photo: req.file.path
+        profile_photo
     }).then(data => {
+        //console.log(req.file.path);
         res.status(200).json(data);
     })
     .catch(err => {

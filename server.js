@@ -30,9 +30,12 @@ db.sequelize.sync({ force: true })
    }
 });
 //db.sequelize.sync();
+const fileUpload = require('express-fileupload');
 
+app.use(fileUpload());
 
 // simple route
+app.use('/images', express.static('images'));
 app.get("/", (req, res) => { res.json({ message: "Hello world!" });});
 // API Routes
 require('./app/routes/auth.routes')(app);
