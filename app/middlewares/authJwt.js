@@ -4,17 +4,20 @@ const db = require("../models/index.js");
 
 const User = db.User;
 /*
-isAdmin = (req, res, next) => {
-    /*
+module.exports = isAdmin = (req, res, next) => {
     User.findOne({
         where: {
-            id: payload.sub
+            id: payload.sub,
+            //roleId: payload.role
         }
     })
     .then((user) => {
-        if(user.roleId == 1) {
+        if(user) {
             next();
             return;
+        }
+        else {
+            return res.status(404).send({message: 'Required administrator role'});
         }
     })
     .catch((err) => {
@@ -24,8 +27,7 @@ isAdmin = (req, res, next) => {
     })
     
 }
-*/
-/*
+
 isCoach = (req, res, next) => {
 
 }
@@ -35,12 +37,10 @@ isAthlete = (req, res, next) => {
 }
 
 const authJwt = {
-    //verifyToken: verifyToken,
     isAdmin: isAdmin,
     isCoach: isCoach,
     isAthlete: isAthlete
   };
 
   module.exports = authJwt;
-
   */

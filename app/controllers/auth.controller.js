@@ -33,7 +33,10 @@ exports.login = (req, res) => {
         var passwordIsValid = bcrypt.compare(req.body.password, user.password, (error, resolve) => {
             if(resolve) {
                 
-                const token = jwt.sign({sub: user.id}, secretKeyConfig.secret, {
+                const token = jwt.sign({
+                    sub: user.id,
+                    role: user.roleId
+                }, secretKeyConfig.secret, {
                     expiresIn: 86400
                 });
          
