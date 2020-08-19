@@ -11,6 +11,9 @@ const validator = require('express-validator');
 // API Routes
 const authRoutes = require('./app/routes/auth.routes');
 const eventRoutes = require('./app/routes/event.routes');
+const clubRoutes= require('./app/routes/club.routes');
+//const clubInviteRoutes=require('./app/routes/club/invite.routes');
+
 
 const corsOptions = {
   origin: "http://localhost:8081"
@@ -33,58 +36,14 @@ app.use(auth.initialize());
 
 
 // if you need to drop the existing table and resync database use {force: true}
-/*
-db.sequelize.sync({ force: true }).then(() => {
-  db.Role.create({
-      name: 'Administrator',
-      isAdmin: true
-  });
-  db.Role.create({
-    name: 'Coach',
-    isAdmin: false
-  });
-  db.Role.create({
-    name: 'Athlete',
-    isAdmin: false
-  });
-  db.Sport.create({
-    type:'Running'
-  });
-  db.Sport.create({
-    type:'Cicling'
-  });
-  db.Sport.create({
-    type:'TeamSports'
-  });
-  db.Sport.create({
-    type:'WeightLifting'
-  });
-  db.User.create({
-    first_name: 'admin',
-    last_name: 'admin',
-    email: 'admin@sport.ro',
-    password: 'admin2020',
-    roleId: 1
-  });
-  db.Club.create({
-    name: 'Footbal Club Suceava'
-  });
-  db.Club.create({
-    name: 'Footbal Club Botosani'
-  });
-  db.Event.create({
-    name: 'Event1',
-    date: new Date(),
-    time: new Date().toLocaleTimeString(),
-    description: 'description1',
-    location: 'Suceava',
-    //clubId: 1,
-    radius: 10,
-    sportId: 1,
-    
-  });
+db.sequelize.sync({ force: true })
+  .then(() => {
+    let hardcodedData = require('./app/config/db.hardcodeData');
+    for(let i = 0; i < hardcodedData.length; i++) {
+      let data = hardcodedData[i];
+      //data();
+   }
 });
-*/
 //db.sequelize.sync();
 
 
@@ -96,6 +55,16 @@ app.get("/", (req, res) => {
 require('./app/routes/user.route.js')(app);
 
 require('./app/routes/workout.route.js')(app);
+
+require('./app/routes/club.routes.js')(app);
+
+require('./app/routes/club-invite.routes.js')(app);
+
+require('./app/routes/club-member.routes.js')(app);
+
+
+
+//app.use(clubRoutes);
 
 /*
 // authentification routes

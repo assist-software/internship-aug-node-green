@@ -15,7 +15,7 @@ exports.create = (req ,res, next) => {
     }
 
     const { first_name, last_name, email, password, roleId, gender, primarySport, secondarySport, heigt, weight, age, profile_photo} = req.body;
-    const hashedPassword = bcrypt.hash(password,10);
+    const hashedPassword = bcrypt.hashSync(password,10);
     User.create({
         first_name,
         last_name,
