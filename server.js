@@ -6,6 +6,14 @@ const auth = require("./app/config/passport.config")();
 const passport = require('passport');
 const {authJwt} = require('./app/middlewares/authJwt');
 const validator = require('express-validator');
+
+
+// API Routes
+const authRoutes = require('./app/routes/auth.routes');
+const eventRoutes = require('./app/routes/event.routes');
+const clubRoutes= require('./app/routes/club.routes');
+//const clubInviteRoutes=require('./app/routes/club/invite.routes');
+
 const app = express();
 
 const corsOptions = {
@@ -45,6 +53,15 @@ require('./app/routes/user.route.js')(app);
 require('./app/routes/club.routes.js')(app);
 require('./app/routes/workout.route.js')(app);
 
+require('./app/routes/club.routes.js')(app);
+
+require('./app/routes/club-invite.routes.js')(app);
+
+require('./app/routes/club-member.routes.js')(app);
+
+
+
+//app.use(clubRoutes);
 require('./app/routes/event-member.routes.js')(app);
 
 require('./app/routes/event-request.routes.js')(app);
