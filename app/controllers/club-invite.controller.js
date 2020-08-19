@@ -166,7 +166,11 @@ exports.accept=(req,res)=>{
 }
 exports.list = (req, res) => {
 
-    ClubInvite.findAll()
+    ClubInvite.findAll({
+      where: {
+        clubId: req.params.clubId
+      }
+    })
       .then(data => {
         res.send(data);
       })

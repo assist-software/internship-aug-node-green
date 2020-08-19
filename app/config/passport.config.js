@@ -9,13 +9,18 @@ const Strategy = passportJWT.Strategy;
 
 const User = db.User;
 
+
+// Parametri utilizati la crearea unei strategii pentru autorizarea
 const params = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: secretKeyConfig.secret
 };
 
+let userRole = null;
 module.exports = function() {
+    // Crearea strategiei 
     var strategy = new Strategy(params, (payload, done) => {
+        // Cautam userul
        User.findOne({
         where: {
             id: payload.sub

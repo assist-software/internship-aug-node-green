@@ -14,25 +14,51 @@ exports.create = (req ,res, next) => {
         return;
     }
 
-    const { first_name, last_name, email, password, roleId, gender, primarySport, secondarySport, heigt, weight, age, profile_photo} = req.body;
+    /*
+    const {img_name, img_data} = req.files.pic;
+    if(img_name && img_data) {
+        User.create({
+            profile_photo: img_data
+        })
+    }
+
+    const id = req.parmas.id;
+    User.findOne({
+        where: {
+            id: id
+        }
+    })
+    .then(user => {
+        if(user) {
+            res.send({image: user.profile_photo})
+        }
+    })
+    */
+
+    const { first_name, last_name, email, password, gender, primarySportId, secondarySportId, height, weight, age} = req.body;
+    if(!req.body.roleId) {
+        req.body.roleId = 3;
+    }
     const hashedPassword = bcrypt.hashSync(password,10);
     User.create({
         first_name,
         last_name,
         email,
         password: hashedPassword,
-        roleId,
+        roleId: req.body.roleId, 
         gender,
-        primarySport,
-        secondarySport,
-        heigt,
+        primarySportId,
+        secondarySportId,
+        height,
         weight,
         age,
-        profile_photo: req.file.path
+        profile_photo: null
     }).then(data => {
+        //console.log(req.file.path);
         res.status(200).json(data);
     })
     .catch(err => {
+        console.log(`Error :     ${err}`);
         res.status(500).send({message: err.message});
     })
 };
@@ -51,7 +77,7 @@ exports.update = (req, res, next) => {
         req.body.email = req.body.newEmail;
     }
     if(req.body.password !== undefined){
-        req.body.password = bcrypt.hash(req.body.password,10);
+        req.body.password = bcrypt.hashSync(req.body.password,10);
     }
     User.update(req.body,{ where: {id: id} })
         .then(num => {
@@ -67,9 +93,10 @@ exports.update = (req, res, next) => {
         })
         .catch(err => {
             res.status(500).send({
-            message: "Error updating User with id=" + id});
+            message: "Error updating User with id=" + id,
+            error: err.message
         });
-
+    });
 };
 
 //get User method
@@ -142,6 +169,8 @@ exports.validate = (method) => {
         case 'create': {
             return [
                 body(['first_name','last_name','gender']).optional().isString(),
+                
+
                 body('email').exists().notEmpty().isEmail().custom(value => {
                     return User.findOne({ where: {email: value}} ).then(user => {
                         if(user){
@@ -149,15 +178,22 @@ exports.validate = (method) => {
                         }
                     })
                 }),
+                
                 body('password','invalid password').exists().isString().notEmpty().custom((value , { req }) => {
                     if(value !== req.body.confirm_password) {
                         throw new Error('Password confirmation does not match password');
                     }
                     return true;
                 }),
-                body('roleId').exists().isInt(),
-                body(['primarySport','secondarySport','height','weight','age']).optional().isInt(),
+                
+                //body('roleId').exists().isString().toInt()
+                
+                
+                body(['primarySportId','secondarySportId','age']).optional().isInt(),
+                
+                body(['height','weight']).optional().isFloat(),
                 body('profile_photo').optional()
+                
             ]
             break;
         }
@@ -183,7 +219,7 @@ exports.validate = (method) => {
                     }
                     return true;
                 }),
-                body('roleId').optional().isInt(),
+                body('roleId').optional().isString().toInt(),
                 body(['primarySport','secondarySport','height','weight','age']).optional().isInt(),
                 body('profile_photo').optional()
             ]

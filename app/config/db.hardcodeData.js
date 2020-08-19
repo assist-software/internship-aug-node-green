@@ -68,7 +68,7 @@ let createUserSarah = db.User.create({
     first_name: 'Sarah',
     last_name: 'Johnes',
     email: 'sarahjohnes@johnes.com',
-    password: bcrypt.hashSync('12345', 10),
+    password: bcrypt.hashSync('123456789', 10),
     gender: 'm',
     height: 185,
     weight: 75,
@@ -84,6 +84,16 @@ let createUserValentin = db.User.create({
   gender: 'm',
   age: 25,
   roleId: '1'
+});
+
+let createUserMory = db.User.create({
+  first_name: 'John',
+  last_name: 'Sharp',
+  email: 'john.sharp@sharp.com',
+  password: bcrypt.hashSync('12345', 10),
+  gender: 'm',
+  age: 25,
+  roleId: '2'
 });
 
 let createClubRunners = db.Club.create({
@@ -147,6 +157,7 @@ module.exports = [
     createUserMike,
     createUserSarah,
     createUserValentin,
+    createUserMory,
     createClubRunners,
     createClubTeamers,
     createClubLifters,

@@ -4,7 +4,7 @@ module.exports= app => {
     var router=require("express").Router();
     router.post("/create",clubinvites.validate(),clubinvites.create);
     
-    router.get("/findAll",clubinvites.list);
+    router.get("/:clubId",clubinvites.list);
 
     router.delete("/:id",clubinvites.decline);
 

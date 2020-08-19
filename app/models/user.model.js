@@ -28,11 +28,11 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: true
        },
        height: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DOUBLE,
         allowNull: true
        },
        weight: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DOUBLE,
         allowNull: true
        },
        age: {
