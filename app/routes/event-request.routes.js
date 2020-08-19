@@ -1,4 +1,6 @@
-module.exports = app => {
+const { Club } = require('../models/index.js');
+
+    module.exports = app => {
     const eventRequest = require('../controllers/event-request.controller.js');
 
     const eventMember = require('../controllers/event-member.controller.js');
@@ -16,8 +18,6 @@ module.exports = app => {
 
     //get a list of request by eventId
     router.get('/:eventId',eventRequest.validationRules('get'),eventRequest.validate,eventRequest.list);
-
-
 
     app.use('/api/event/request',router);
 };

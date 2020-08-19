@@ -170,8 +170,9 @@ exports.validationRules = method => {
                     return true;
                 }),
                 body(['primarySportId', 'secondarySportId','age']).optional().isInt(),
-                body(['height', 'weight']).isFloat(),
+                body(['height', 'weight']).optional().isFloat(),
                 body('profile_photo').optional()
+                
             ]
             break;
         }
@@ -187,7 +188,7 @@ exports.validationRules = method => {
                 }),
                 body('roleId').optional().isInt(),
                 body(['primarySportId', 'secondarySportId','age']).optional().isInt(),
-                body(['height', 'weight']).isFloat(),
+                body(['height', 'weight']).optional().isFloat(),
                 body('profile_photo').optional(),
                 param('userId').isInt()
             ]

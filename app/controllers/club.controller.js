@@ -1,80 +1,73 @@
 const db=require("../models");
 const Club=db.Club;
-const Op=db.Sequelize.Op;
-
+const { body, validationResult  }  = require('express-validator');
 
 exports.create=(req,res)=>{
 
-    //create a club
-    const club={
-        name:req.body.name,
-        ownerId:req.body.ownerId
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(422).json({ errors: errors.array() });
+        return;
     }
+
+//check if the club name exists
 
     Club.findOne({ where: {name: req.body.name}} )
     .then(club => {
+
         if(club){
-            res.send({
+            res.status(404).send({
                 message:'The club is already taken',
                 club:club
             });
-        }
-    })
+        }else{
 
-    
-    Club.create(club)
+        //create a club
+        const club={
+          name:req.body.name,
+          ownerId:req.body.ownerId
+        }
+        Club.create(club)
 
         .then(data=>{
-            res.send(data);
+            res.status(200).send(data);
         })
         .catch(err=>{
             res.status(500).send({
                 message:
                     err.message||"Some error occured while creating the Club"
             });
-        });
+        });          
+          
+
+        }
+        
+    })
+
+    
+    
 }
 exports.update=(req,res)=>{
     const id=req.params.id;
 
-    const club={
-      name:req.body.name,
-      ownerId:req.body.ownerId
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(422).json({ errors: errors.array() });
+        return;
     }
 
-    Club.findOne({ where: {name: req.body.name}} )
-    .then(club => {
-        if(club){
-            res.send({
-                message:'The club is already taken',
-                club:club
-            });
-        }
-    })
-
-    
-    Club.update(req.body,{
-        where:{id: id}
-    })
+    Club.update(req.body,{where:{id:id}})
     .then(num=>{
-        if(num==1){
-            res.send({
-                message: "Club was updated succesfully!"
-            });
-        }
-        else{
-            res.send({
-                message: 'Cannot update Tutorial with id=${id}.'
-            });
-            
+        if (num == 1) {
+          res.send({
+              message: "Club was updated successfully."
+          });
+        } else {
+          res.status(404).send({
+              message: `Cannot update Club with id=${id}. Maybe Club was not found!`
+          });
         }
     })
-
-    .catch(err=>{
-        res.status(500).send({
-            message:"Error while updating club "+id
-        });
-    });
 }
 
 
@@ -110,22 +103,59 @@ exports.findAll = (req, res) => {
 
 exports.search = (req,res)=>{
 
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(422).json({ errors: errors.array() });
+        return;
+    }
+
     const ownerId=req.body.ownerId;
     const name=req.body.name;
-
-    Club.findAll({where:{
+    if(ownerId&&name)
+    {
+      Club.findAll({where:{
         ownerId:ownerId,
         name:name
-    }})
-    .then(data=>{
-        res.send(data);
-    })
-    .catch(err=>{
-        res.status(500).send({
-            message:
-            err.message || "Some error ocurred while retrieving clubs"
-        });
-    });
+      }})
+      .then(data=>{
+          res.send(data);
+      })
+      .catch(err=>{
+          res.status(500).send({
+              message:
+              err.message || "Some error ocurred while retrieving clubs"
+          });
+      });
+    }else if(ownerId){
+      Club.findAll({where:{
+        ownerId:ownerId
+      }})
+      .then(data=>{
+          res.send(data);
+      })
+      .catch(err=>{
+          res.status(500).send({
+              message:
+              err.message || "Some error ocurred while retrieving clubs"
+          });
+      });
+    }else if(name){
+      Club.findAll({where:{
+        name:name
+      }})
+      .then(data=>{
+          res.send(data);
+      })
+      .catch(err=>{
+          res.status(500).send({
+              message:
+              err.message || "Some error ocurred while retrieving clubs"
+          });
+      });
+    }else{
+      res.status(404).send({message:"You have to search by something!"})
+    }
+    
 
 };
 exports.delete = (req, res) => {
@@ -152,4 +182,32 @@ exports.delete = (req, res) => {
       });
   };
 
+  exports.validate=()=> {
+    return [
+    
+      body('ownerId').optional().isInt(),
+      body('name').exists().notEmpty().isString()
+      
+    ]
+  }
+  exports.validateUpdate=()=>{
+    return [
+    
+      body('ownerId').optional().isInt(),
+      body('name').optional().isString().custom(value => {
+        return Club.findOne({ where: {name: value}} ).then(club => {
+            if(club){
+                throw new Error('Name already in use!!');
+            }
+        })
+      })
+      
+    ]
+  }
+  exports.validateSearch=()=>{
+    return[
+      body('ownerId').optional().isInt(),
+      body('name').optional().isString()     
+    ]
+  }
 
