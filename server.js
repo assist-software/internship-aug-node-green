@@ -14,46 +14,43 @@ const eventRoutes = require('./app/routes/event.routes');
 const clubRoutes= require('./app/routes/club.routes');
 //const clubInviteRoutes=require('./app/routes/club/invite.routes');
 
+const app = express();
 
 const corsOptions = {
   origin: "http://localhost:8081"
 };
 
-const app = express();
+
 app.use(cors(corsOptions));
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
-// user express - validator
-//app.use(expressValidator);
-// initialize validator
-
-
-//app.use(validator());
 //initialize passport
-app.use(auth.initialize());
-
+//app.use(auth.initialize());
 
 // if you need to drop the existing table and resync database use {force: true}
+/*
 db.sequelize.sync({ force: true })
   .then(() => {
     let hardcodedData = require('./app/config/db.hardcodeData');
     for(let i = 0; i < hardcodedData.length; i++) {
       let data = hardcodedData[i];
-      //data();
+      data();
    }
 });
-//db.sequelize.sync();
+*/
+db.sequelize.sync();
 
 
 // simple route
-app.get("/", (req, res) => {
-  res.json({ message: "Hello world!" });
-});
-
+app.get("/", (req, res) => { res.json({ message: "Hello world!" });});
+// API Routes
+require('./app/routes/auth.routes')(app);
+require('./app/routes/event.routes')(app);
+require('./app/routes/club-request.routes')(app);
 require('./app/routes/user.route.js')(app);
-
+require('./app/routes/club.routes.js')(app);
 require('./app/routes/workout.route.js')(app);
 
 require('./app/routes/club.routes.js')(app);
@@ -65,6 +62,11 @@ require('./app/routes/club-member.routes.js')(app);
 
 
 //app.use(clubRoutes);
+require('./app/routes/event-member.routes.js')(app);
+
+require('./app/routes/event-request.routes.js')(app);
+
+require('./app/routes/event-invite.routes.js')(app);
 
 /*
 // authentification routes
@@ -79,6 +81,7 @@ app.get('/checkAuthorization', auth.authenticate(), (req, res) => {
   });
 });
 */
+app.get('/checkAuthenticate', auth.authenticate());
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;

@@ -9,13 +9,10 @@ const Strategy = passportJWT.Strategy;
 
 const User = db.User;
 
-
 const params = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     secretOrKey: secretKeyConfig.secret
 };
-
-let userRole = null;
 
 module.exports = function() {
     var strategy = new Strategy(params, (payload, done) => {
@@ -26,17 +23,6 @@ module.exports = function() {
        })
         .then((user) => {
             if(user) {
-                /* --------------O sa finisez daca o sa am timp----------------
-                if(user.roleId == 1) {
-                    userRole = "Administrator";
-                }
-                else if(user.roleId == 2) {
-                    userRole = "Coach";
-                }
-                else if(user.roleId == 3) {
-                    userRole = "Athlete";
-                }
-                --------------------------------------------------------------*/
                 return done(null, user);
             }
             else {
@@ -56,29 +42,5 @@ module.exports = function() {
         authenticate: function() {
             return passport.authenticate("jwt", {session: false});
         }, 
-       
-        /* ----------- o sa finisez daca o sa am timp-----------
-
-       authenticateAdmin: function() {
-        if(userRole == "Administrator") {
-            return passport.authenticate("jwt", {
-                session: false
-                successRedirec
-            });
-        }
-       },
-       */
-       /*
-       authenticateCoach: function() {
-        if(userRole == "Coach") {
-            return passport.authenticate("jwt", {session: false});
-        }
-       },
-       authenticateAthlete: function() {
-        if(userRole == "Athlete") {
-            return passport.authenticate("jwt", {session: false});
-        }
-       }
-       ------------------------------------------------------*/
     }
 };
