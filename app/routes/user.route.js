@@ -19,15 +19,15 @@ module.exports = app => {
 
     const router = require('express').Router();
 
-    router.post('/create',auth.authenticate(), users.validate('create'), users.create);
+    router.post('/create',auth.authenticate(), users.validationRules('create'), users.validate, users.create);
 
-    router.post('/search',auth.authenticate(), users.validate('search'),users.search);
+    router.post('/search',auth.authenticate(),users.validationRules('search'),users.validate,users.search);
 
-    router.put('/:userId',auth.authenticate(), users.validate('update'),users.update);
+    router.put('/:userId',auth.authenticate(),users.validationRules('update'),users.validate,users.update);
 
-    router.get('/:userId',auth.authenticate(), users.get);
+    router.get('/:userId',auth.authenticate(),users.validationRules('verifyUserId'),users.validate, users.get);
 
-    router.delete('/:userId',auth.authenticate(), users.delete);
+    router.delete('/:userId',auth.authenticate(),users.validationRules('verifyUserId'),users.validate, users.delete);
 
     app.use('/api/user',router);
 };

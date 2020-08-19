@@ -9,13 +9,13 @@ module.exports = app => {
     router.post('/create',eventRequest.validationRules('create'),eventRequest.validate,eventRequest.create);
 
     //accpet request
-    router.post('/accept/:requestId',eventRequest.accept,eventMember.validationRules('create'),eventMember.validate,eventMember.create);
+    router.post('/accept/:requestId',eventRequest.validationRules('acceptAndDelete'),eventRequest.validate,eventRequest.accept,eventMember.validationRules('create'),eventMember.validate,eventMember.create);
 
     //decline request
-    router.delete('/decline/:requestId',eventRequest.decline);
+    router.delete('/decline/:requestId',eventRequest.validationRules('acceptAndDelete'),eventRequest.validate,eventRequest.decline);
 
     //get a list of request by eventId
-    router.get('/:eventId',eventRequest.list);
+    router.get('/:eventId',eventRequest.validationRules('get'),eventRequest.validate,eventRequest.list);
 
 
 

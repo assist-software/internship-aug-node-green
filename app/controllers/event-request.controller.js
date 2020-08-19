@@ -1,6 +1,6 @@
 const db = require('../models');
 
-const { body, validationResult } = require('express-validator');
+const { body,param, validationResult } = require('express-validator');
 
 const EventRequest = db.EventRequest;
 const EventMember = db.EventMember;
@@ -13,11 +13,13 @@ const User = db.User;
 exports.create = async (req, res) => {
 
     try {
+        //check if event exists
         const eventResult = await Event.findOne({
             where: {
                 id: req.body.eventId
             }
         });
+        //check if user exists
         const userResult = await User.findOne({
             where: {
                 id: req.body.userId
@@ -25,9 +27,9 @@ exports.create = async (req, res) => {
         });
         if (eventResult === null || userResult === null) {
             res.status(404).json();
-            return;
         }
         else {
+            //check if request exists
             const eventExists = await EventRequest.findOne({
                 where: {
                     userId: userResult.id,
@@ -48,6 +50,7 @@ exports.create = async (req, res) => {
                 throw new Error('Already member!');
             }
             else {
+                //create a new request
                 EventRequest.create({
                     userId: req.body.userId,
                     eventId: req.body.eventId
@@ -66,6 +69,7 @@ exports.accept = async (req, res, next) => {
 
     try {
         const id = req.params.requestId;
+        //check if request exists
         const resultEvent = await EventRequest.findOne({
             where: {
                 id: id
@@ -79,13 +83,10 @@ exports.accept = async (req, res, next) => {
         else {
             req.body.eventId = resultEvent.eventId;
             req.body.userId = resultEvent.userId;
+            //create a new member
             next();
-
-            EventRequest.destroy({
-                where: {
-                    id: id
-                }
-            });
+            //delete reqeust
+            resultEvent.destroy();
             res.status(200).json();
 
         }
@@ -101,17 +102,15 @@ exports.accept = async (req, res, next) => {
 exports.decline = async (req, res) => {
     try {
         const id = req.params.requestId;
+        //check if request exists
         const requestResult = await EventRequest.findOne({
             where: {
                 id: id
             }
         });
         if (requestResult) {
-            EventRequest.destroy({
-                where: {
-                    id: requestResult.id
-                }
-            });
+            //delete request
+            requestResult.destroy();
             res.status(200).json();
         }
         else {
@@ -147,6 +146,18 @@ exports.validationRules = method => {
         case 'create': {
             return [
                 body(['userId', 'eventId']).exists().isInt()
+            ]
+            break;
+        }
+        case 'acceptAndDelete': {
+            return [
+                param('requestId').isInt()
+            ]
+            break;
+        }
+        case 'get': {
+            return [
+                param('eventId').isInt()
             ]
             break;
         }
