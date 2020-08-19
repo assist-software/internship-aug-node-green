@@ -41,7 +41,7 @@ exports.create = (req ,res, next) => {
         last_name,
         email,
         password: hashedPassword,
-        roleId,
+        roleId, 
         gender,
         primarySport,
         secondarySport,
@@ -72,7 +72,7 @@ exports.update = (req, res, next) => {
         req.body.email = req.body.newEmail;
     }
     if(req.body.password !== undefined){
-        req.body.password = bcrypt.hash(req.body.password,10);
+        req.body.password = bcrypt.hashSync(req.body.password,10);
     }
     User.update(req.body,{ where: {id: id} })
         .then(num => {
@@ -88,7 +88,9 @@ exports.update = (req, res, next) => {
         })
         .catch(err => {
             res.status(500).send({
-            message: "Error updating User with id=" + id});
+            message: "Error updating User with id=" + id,
+            error: err.message
+        });
         });
 
 };
