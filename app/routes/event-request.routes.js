@@ -19,7 +19,5 @@ const { Club } = require('../models/index.js');
     //get a list of request by eventId
     router.get('/:eventId',eventRequest.list);
 
-
-
     app.use('/api/event/request',router);
 };

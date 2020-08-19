@@ -68,7 +68,7 @@ let createUserSarah = db.User.create({
     first_name: 'Sarah',
     last_name: 'Johnes',
     email: 'sarahjohnes@johnes.com',
-    password: bcrypt.hashSync('12345', 10),
+    password: bcrypt.hashSync('123456789', 10),
     gender: 'm',
     height: 185,
     weight: 75,
