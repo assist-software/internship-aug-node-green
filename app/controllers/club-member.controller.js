@@ -3,7 +3,8 @@ const { body, validationResult  }  = require('express-validator');
 const Club=db.Club;
 const User=db.User;
 const ClubMember=db.ClubMember;
-
+const ClubRequest=db.ClubRequest;
+const { Op } = require("sequelize");
 exports.create=(req,res)=>{
 
     const errors = validationResult(req);
@@ -82,6 +83,80 @@ exports.list=(req,res)=>{
             err.message || "Some error occurred while retrieving club members."
         });
       });
+}
+exports.sendStatus=(req,res)=>{
+  const userId=req.params.userId;
+  var clubIds=[]
+  var clubIdsRequest=[]
+  
+  var response={
+    joined:[],
+    pending:[],
+    new:[]
+  }
+  ClubMember.findAll({where:{userId:userId}})
+  .then(data=>{
+    if(data)
+    {
+      //response.joined=data;
+      for(let i=0;i<data.length;i++)
+      {
+        clubIds.push(data[i].clubId)
+      }
+      
+    }
+    Club.findAll({
+      attributes:['id','name','ownerId',"sportId"],
+      where:{
+      id:{[Op.in]:clubIds}
+    }}).then(data=>{
+      if(data)
+      {
+        response.joined=data
+      }
+      ClubRequest.findAll({where:{userId:userId}})
+      .then(data=>{
+        if(data)
+        {
+          //response.pending=data
+          for(let i=0;i<data.length;i++)
+          {
+            clubIdsRequest.push(data[i].clubId)
+            clubIds.push(data[i].clubId)
+          }
+          
+        }
+        Club.findAll({
+          attributes:['id','name','ownerId',"sportId"],
+          where:{
+          id:{[Op.in]:clubIdsRequest}
+        }})
+        .then(data=>{
+          if(data)
+          {
+            response.pending=data
+          }
+          Club.findAll({
+            attributes:['id','name','ownerId',"sportId"],
+            where:{
+            id:{[Op.notIn]: clubIds}
+          }})
+          .then(data=>{
+            if(data){
+              response.new=data
+        
+            }
+            res.status(200).send(response)
+          })
+        })
+
+    })
+
+    
+      
+
+    })
+  }) 
 }
 exports.validate = () => {
     

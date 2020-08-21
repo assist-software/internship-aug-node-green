@@ -1,5 +1,7 @@
 const db=require("../models");
 const Club=db.Club;
+
+
 const { body, validationResult  }  = require('express-validator');
 
 exports.create=(req,res)=>{
@@ -25,7 +27,8 @@ exports.create=(req,res)=>{
         //create a club
         const club={
           name:req.body.name,
-          ownerId:req.body.ownerId
+          ownerId:req.body.ownerId,
+          sportId:req.body.sportId
         }
         Club.create(club)
 
@@ -89,7 +92,7 @@ exports.findOne = (req, res) => {
 
 exports.findAll = (req, res) => {
 
-    Club.findAll()
+    Club.findAll({attributes:['id','name','ownerId',"sportId"]})
       .then(data => {
         res.send(data);
       })
@@ -111,6 +114,7 @@ exports.search = (req,res)=>{
 
     const ownerId=req.body.ownerId;
     const name=req.body.name;
+    const sportId=req.body.sportId;
     if(ownerId&&name)
     {
       Club.findAll({where:{
@@ -185,14 +189,18 @@ exports.delete = (req, res) => {
   exports.validate=()=> {
     return [
     
+      body('sportId').exists().notEmpty().isInt(),
       body('ownerId').optional().isInt(),
       body('name').exists().notEmpty().isString()
       
     ]
   }
+
+
+
   exports.validateUpdate=()=>{
     return [
-    
+      body('sportId').optional().isInt(),
       body('ownerId').optional().isInt(),
       body('name').optional().isString().custom(value => {
         return Club.findOne({ where: {name: value}} ).then(club => {
@@ -207,6 +215,7 @@ exports.delete = (req, res) => {
   exports.validateSearch=()=>{
     return[
       body('ownerId').optional().isInt(),
+      body('sportId').optional().isInt(),
       body('name').optional().isString()     
     ]
   }

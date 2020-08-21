@@ -5,7 +5,8 @@ const { body, validationResult } = require('express-validator');
 const Event = db.Event;
 const User = db.User;
 const EventMember = db.EventMember;
-
+const EventRequest = db.EventRequest;
+const { Op } = require("sequelize");
 //create a member
 
 exports.create = async (req, res, next) => {
@@ -85,9 +86,6 @@ exports.list = async (req, res) => {
     });
     res.status(200).json(data);
 }
-
-
-
 
 exports.validationRules = method => {
 
