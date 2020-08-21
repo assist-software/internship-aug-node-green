@@ -44,7 +44,28 @@ exports.login = (req, res) => {
                     expiresIn: 86400
                 });
                 // Dupa generarea tokenului, transmitem ca raspuns un obiect cu datele necesare despre user
-                res.status(200).send({
+                let data = {
+                    id: user.id,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    email: user.email,
+                    password: user.password,
+                    confirm_password: user.password,
+                    gender: user.gender,
+                    height: user.height,
+                    weight: user.weight,
+                    age: user.age,
+                    profile_photo: user.profile_photo,
+                    //roleId: user.roleId,
+                    primarySportId: user.primarySportId,
+                    secondarySportId: user.secondarySportId
+                }
+
+                res.status(200).send({ 
+                    accessToken: token,
+                    data
+                });
+                    /*
                     id: user.id,
                     accessToken: token,
                     user_firstname: user.first_name,
@@ -52,7 +73,8 @@ exports.login = (req, res) => {
                     user_email: user.email,
                     user_gender: user.gender,
                     user_roleid: userRoles[user.roleId]
-                });
+                    */
+                
             }
             else {
                 // Daca emailul userului a fost corect, dar parola gresita, 404
@@ -92,7 +114,7 @@ exports.reset = (req, res) => {
 
         // Trimitem un mesaj pe emailul userului cu parola noua
         mail(`You new password is ${newPass}`, [user.email]);
-        return res.send({message: 'password reset succes'});
+        return res.status(200).json({message: 'password reset succes'});
     })
     .catch(err => {
         res.status(404).send({error: err.message});

@@ -30,7 +30,7 @@ let createUserJohn = db.User.create({
     first_name: 'John',
     last_name: 'Andrew',
     email: 'johnandrew@andrew.com',
-    password: bcrypt.hashSync('12345', 10),
+    password: bcrypt.hashSync('123456789', 10),
     gender: 'm',
     height: 185,
     weight: 75,
@@ -50,6 +50,17 @@ let createUserIulian = db.User.create({
   roleId: '1'
 });
 
+let createUserBot = db.User.create({
+  first_name: 'Iulian Bot',
+  last_name: 'Iulian-Elisei',
+  email: 'iulianbot@bot.com',
+  password: bcrypt.hashSync('123456789', 10),
+  gender: 'Male',
+  height: 185,
+  weight: 75,
+  age: 23,
+  roleId: '3'
+});
 
 
 let createUserMike = db.User.create({
@@ -97,13 +108,28 @@ let createUserMory = db.User.create({
 });
 
 let createClubRunners = db.Club.create({
-    name: 'RunningClub'
+    name: 'RunningClub',
+    ownerId: 4
 });
 let createClubTeamers = db.Club.create({
-    name: 'TeamClub'
+    name: 'TeamClub',
+    ownerId: 7
 });
 let createClubLifters = db.Club.create({
-    name: 'LiftClub'
+    name: 'LiftClub',
+    ownerId: 3,
+});
+let createClubRunnersv2 = db.Club.create({
+  name: 'RunningClubv2',
+  ownerId: 4
+});
+let createClubTeamersv2 = db.Club.create({
+  name: 'TeamClubv2',
+  ownerId: 4
+});
+let createClubLiftersv2 = db.Club.create({
+  name: 'LiftClubv2',
+  ownerId: 7
 });
 
 let createEventMarathon = db.Event.create({
@@ -160,7 +186,10 @@ module.exports = [
     createUserMory,
     createClubRunners,
     createClubTeamers,
-    createClubLifters,
+    createClubLifters ,
+    createClubRunnersv2,
+    createClubTeamersv2,
+    createClubLiftersv2,
     createEventMarathon,
     createEventTeamFest,
     createEventLiftUp

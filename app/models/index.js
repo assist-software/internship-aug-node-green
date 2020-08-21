@@ -64,7 +64,8 @@ db.EventMember.belongsTo(db.Event,{allowNull: false});
 
 //club assosiations
 db.Club.belongsTo(db.User,{as:'owner'});
-
+//db.User.hasMany(db.Club);
+//------
 db.ClubInvite.belongsTo(db.Club,{
   allowNull:false
 });
@@ -82,8 +83,8 @@ db.ClubMember.belongsTo(db.User),{
 db.ClubMember.belongsTo(db.Club,{
   allowNull:false
 });
-
 // User assosiations
+
 console.log(db.Sport);
 db.User.belongsTo(db.Role), {
   allowNull: false

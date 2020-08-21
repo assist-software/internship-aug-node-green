@@ -6,7 +6,7 @@ module.exports= app => {
     
     router.get("/:clubId",clubinvites.list);
 
-    router.delete("/:id",clubinvites.decline);
+    router.delete("/decline/:id",clubinvites.decline);
 
     router.post("/accept/:id",clubinvites.accept);
 

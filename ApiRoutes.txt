@@ -381,3 +381,49 @@
         /api/club/request/:clubId
             method: GET
             payload: {}
+
+                                        Rute pentru club-invite
+
+    Create club invite
+        /api/club/invite/create
+            method: POST
+            payload: {
+                email: <string required>
+                clubId: <integer required>
+            }
+
+    Accept invite
+        /api/club/invite/accept/:id
+            method: POST
+            payload: {}
+
+    Decline invite
+        /api/club/invite/decline/:id
+            method: DELETE
+            payload: {}
+
+    Get list of invites by clubId
+        /api/club/invite/:clubId
+            method: GET
+            payload: {}
+
+                                        Rute pentru club-member
+                            
+    Create a club member
+        /api/club/member/create
+            method: POST
+            payload: {
+                userId: <integer required>
+                clubId: <integer required>
+            }
+
+    Delete a club member by inviteId
+        /api/club/member/remove/:id
+            method: DELETE
+            payload: {}
+
+    Get a list of club members by clubId
+        /api/club/member/:id
+            method: GET
+            payload: {}
+    

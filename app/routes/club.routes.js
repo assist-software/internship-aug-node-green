@@ -9,5 +9,6 @@ module.exports= app => {
     router.get("/",clubs.findAll);
     router.post("/search",clubs.validateSearch(),clubs.search);
     router.delete("/:id",clubs.delete);
+
     app.use('/api/club',router); 
 }
