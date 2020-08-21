@@ -1,8 +1,7 @@
 const db = require("../models");
-const { body,param, validationResult } = require('express-validator');
-const { Op } = require('sequelize');
+const { body, param, validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
-
+const fs = require('fs');
 const User = db.User;
 //create User method
 exports.create = async (req, res) => {
@@ -15,16 +14,21 @@ exports.create = async (req, res) => {
         });
 
         if (userExists) {
-            res.status(409).json({ message: 'Email already exists!!'});
+            if (req.file) {
+                fs.unlinkSync(req.file.path);
+            }
+            res.status(409).json({ message: 'Email already exists!!' });
             return;
         }
 
 
         //establishing roleId and create a new user
-        const { first_name, last_name, email, password, gender, primarySportId, secondarySportId, height, weight, age, profile_photo } = req.body;
-        if(!req.body.roleId) {
+        const { first_name, last_name, email, password, gender, primarySportId, secondarySportId, height, weight, age } = req.body;
+        if (!req.body.roleId) {
             req.body.roleId = 3;
         }
+        const profile_photo = (req.file) ? req.file.path : null;
+        //set profile photo
         const hashedPassword = bcrypt.hashSync(password, 10);
         User.create({
             first_name,
@@ -38,12 +42,15 @@ exports.create = async (req, res) => {
             height,
             weight,
             age,
-            profile_photo// req.file.path
+            profile_photo
         });
-
+        //console.log(req.file);
         res.status(200).json();
     }
     catch (err) {
+        if (req.file) {
+            fs.unlinkSync(req.file.path);
+        }
         res.status(500).send({ message: err.message });
     }
 };
@@ -63,6 +70,12 @@ exports.update = async (req, res) => {
             res.status(404).json();
             return;
         }
+        //verify profile_photo
+        const profile_photo = (req.file) ? req.file.path : null;
+        if (profile_photo != null && profile_photo !== user.profile_photo) {
+            fs.unlinkSync(user.profile_photo);
+            user.profile_photo = profile_photo;
+        }
         //for changing email
         if (req.body.email) {
             if (user.email !== req.body.email) {
@@ -73,7 +86,10 @@ exports.update = async (req, res) => {
                 });
 
                 if (userExists) {
-                    res.status(409).json({ message: 'Email already exists!!'});
+                    if (req.file) {
+                        fs.unlinkSync(req.file.path);
+                    }
+                    res.status(409).json({ message: 'Email already exists!!' });
                 }
             }
         }
@@ -87,6 +103,9 @@ exports.update = async (req, res) => {
         res.status(200).json();
     }
     catch (err) {
+        if (req.file) {
+            fs.unlinkSync(req.file.path);
+        }
         res.status(500).send({ message: err.message });
     }
 
@@ -100,9 +119,19 @@ exports.get = async (req, res) => {
         const user = await User.findOne({
             where: {
                 id: id
+            },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'password']
             }
         });
         if (user) {
+
+            if (user.profile_photo) {
+
+                user['profile_photo'] = `${req.protocol}://${req.headers.host}/${user.profile_photo}`;
+
+            }
+
             res.status(200).json(user);
         }
         else {
@@ -127,6 +156,9 @@ exports.delete = async (req, res) => {
         });
         if (user) {
             //delete user
+            if (user.profile_photo) {
+                fs.unlinkSync(user.profile_photo);
+            }
             user.destroy();
             res.status(200).json();
         }
@@ -159,7 +191,7 @@ exports.search = async (req, res) => {
 
 exports.validationRules = method => {
     switch (method) {
-        case 'create' : {
+        case 'create': {
             return [
                 body(['first_name', 'last_name', 'gender']).optional().isString(),
                 body('email').exists().notEmpty().isEmail(),
@@ -169,14 +201,14 @@ exports.validationRules = method => {
                     }
                     return true;
                 }),
-                body(['primarySportId', 'secondarySportId','age']).optional().isInt(),
+                body(['primarySportId', 'secondarySportId', 'age']).optional().isInt(),
                 body(['height', 'weight']).optional().isFloat(),
                 body('profile_photo').optional()
-                
+
             ]
             break;
         }
-        case 'update' : {
+        case 'update': {
             return [
                 body(['first_name', 'last_name', 'gender']).optional().isString(),
                 body('email').optional().isEmail(),
@@ -187,20 +219,20 @@ exports.validationRules = method => {
                     return true;
                 }),
                 body('roleId').optional().isInt(),
-                body(['primarySportId', 'secondarySportId','age']).optional().isInt(),
+                body(['primarySportId', 'secondarySportId', 'age']).optional().isInt(),
                 body(['height', 'weight']).optional().isFloat(),
                 body('profile_photo').optional(),
                 param('userId').isInt()
             ]
             break;
         }
-        case 'search' : {
+        case 'search': {
             return [
                 body('search_query').exists().withMessage(`search_query does not exist!!`).isString().withMessage('search_query must be a string')
             ]
             break;
         }
-        case 'verifyUserId' : {
+        case 'verifyUserId': {
             return [
                 param('userId').isInt()
             ]
@@ -210,15 +242,18 @@ exports.validationRules = method => {
 };
 
 exports.validate = (req, res, next) => {
-    
+
     const errors = validationResult(req);
 
-    if(!errors.isEmpty()){
+    if (!errors.isEmpty()) {
+        if (req.file) {
+            fs.unlinkSync(req.file.path);
+        }
         res.status(422).json({ errors: errors.array() });
         return;
     }
-    else{
+    else {
         next();
-        return ;
+        return;
     }
 }

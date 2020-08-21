@@ -4,13 +4,21 @@ module.exports = app => {
     const authJwt = require('../middlewares/authJwt');
     const event = require('../controllers/event.controller');
     const auth = require('../config/passport.config')();
+    const upload = require('../middlewares/upload.js');
+
     app.use(auth.initialize());
     const Router = express.Router();
     const Clubs = db.Club;
-    Router.post('/create', auth.authenticate(), event.createValidator(), event.validate, event.create);
+    Router.post('/create', auth.authenticate(),upload.single('event_cover'), event.createValidator(), event.validate, event.create);
     Router.post('/search', auth.authenticate(), event.search);
     Router.get('/:eventId', auth.authenticate(), event.get);
     Router.put('/:eventId', auth.authenticate(), event.updateValidator(), event.validate, event.update);
     Router.delete('/:eventId', auth.authenticate(), event.delete);
+
+    //get all events related to an user
+    Router.get('/events/:userId',auth.authenticate(),event.findAllEventsByUserId);
+
+    //get all event related to a club
+    Router.get('/eventsByClub/:userId',auth.authenticate(),event.findEventsByClub);
     app.use('/api/event', Router);
 };

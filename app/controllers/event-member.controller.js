@@ -82,7 +82,10 @@ exports.list = async (req, res) => {
         where: {
             eventId: req.params.eventId
         },
-        attributes: ['userId']
+        include: {
+            model: User,
+            attributes: ['id','first_name']
+        }
     });
     res.status(200).json(data);
 }

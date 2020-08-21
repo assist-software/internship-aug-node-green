@@ -25,7 +25,7 @@ module.exports = (sequelize , Sequelize) => {
             allowNull: false
         },
         event_cover: {
-            type: Sequelize.BLOB,
+            type: Sequelize.STRING,
             allowNull: true
         }
     });
