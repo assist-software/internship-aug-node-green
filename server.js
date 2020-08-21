@@ -9,6 +9,8 @@ const validator = require('express-validator');
 
 const app = express();
 
+
+
 const corsOptions = {
   origin: false
 };
@@ -18,6 +20,12 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(express.static('images'));
+
+//set images as static folder
+app.use('/images',express.static('images'));
+
 
 // if you need to drop the existing table and resync database use {force: true}
 /*

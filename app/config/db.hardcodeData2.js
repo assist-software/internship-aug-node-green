@@ -153,7 +153,7 @@ exports.populateDb = async () => {
     });
 
     db.Event.create({
-      clubId: 1,
+      clubId: 3,
       name: 'Marathon',
       date: '10.10.2021',
       time: '13:00',
@@ -165,14 +165,14 @@ exports.populateDb = async () => {
     });
 
     db.Event.create({
-      clubId: 1,
+      clubId: 6,
       name: 'TeamFest',
       date: '11.10.2021',
       time: '14:00',
       description: 'Win with your team',
       location: 'Suceava',
       radius: 10,
-      sportId: 2,
+      sportId: 3,
       event_cover: null
     });
 
@@ -211,7 +211,7 @@ exports.populateDb = async () => {
 
     db.ClubMember.create({
       userId: 3,
-      clubId: 2
+      clubId: 3
     });
 
     db.ClubMember.create({
@@ -221,7 +221,7 @@ exports.populateDb = async () => {
 
     db.ClubMember.create({
       userId: 3,
-      clubId: 1
+      clubId: 6
     });
 
     db.ClubRequest.create({

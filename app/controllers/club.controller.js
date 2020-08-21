@@ -4,6 +4,7 @@ const ClubMembers = db.ClubMember;
 const Users = db.User;
 
 const { body, validationResult  }  = require('express-validator');
+const { User } = require("../models");
 
 exports.create=(req,res)=>{
 
@@ -108,10 +109,29 @@ exports.findAll = (req, res) => {
 var globalData = [];
 var photoArray = [];
 exports.findAllWithMembers = (req, res) => {
+  /*
+  const clubResponse = [];
+  Club.findAll({attributes:['id','name','ownerId',"sportId"]})
+  .then(club => {
+    clubResponse = club;
+    const ownerIds = club.map(c => c.dataValues.ownerId);
+    return User.findAll({
+      where: {
+        id: ownerIds
+      }
+    })
+  }).then(users => {
+    clubResponse = clubResponse.map(c => {
+      c.dataValues.coachName = users.filter(user => user.dataValues.id === c.dataValues.ownerId)[0].first_name;
+      return c;
+    })
 
+  }) 
+*/
   Club.findAll({attributes:['id','name','ownerId',"sportId"]})
     .then(clubs => {
       if(clubs) {
+        console.log(clubs);
         for(let i =0; i<clubs.length; i++) {
           ClubMembers.findAll({
             where: {

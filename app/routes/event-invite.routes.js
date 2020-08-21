@@ -12,13 +12,13 @@ module.exports = app => {
     router.post('/create',auth.authenticate(), eventInvite.validationRules('create'),eventInvite.validate,eventInvite.create);
 
     //decline event-invite
-    router.delete('/decline/:inviteId',auth.authenticate(), eventInvite.decline);
+    router.delete('/decline/:inviteId',eventInvite.validationRules('acceptAndDecline'),eventInvite.validate,eventInvite.decline);
 
     //get a list of invites by eventId
-    router.get('/:eventId',auth.authenticate(), eventInvite.list);
+    router.get('/:eventId',eventInvite.validationRules('get'),eventInvite.validate,eventInvite.list);
 
     //accept event- invite
-    router.post('/accept/:inviteId',auth.authenticate(), eventInvite.accept,eventMember.validationRules('create'),eventMember.validate,eventMember.create);
+    router.post('/accept/:inviteId',eventInvite.validationRules('acceptAndDecline'),eventInvite.validate,eventInvite.accept,eventMember.validationRules('create'),eventMember.validate,eventMember.create);
 
     app.use('/api/event/invite',router);
 };

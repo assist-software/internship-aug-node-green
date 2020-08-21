@@ -1,6 +1,6 @@
 const db = require('../models');
 
-const { body, validationResult } = require('express-validator');
+const { body,param, validationResult } = require('express-validator');
 
 const Event = db.Event;
 const User = db.User;
@@ -9,13 +9,15 @@ const EventRequest = db.EventRequest;
 const { Op } = require("sequelize");
 //create a member
 
-exports.create = async (req, res, next) => {
+exports.create = async (req, res) => {
     try {
+        //check if event exists
         const eventResult = await Event.findOne({
             where: {
                 id: req.body.eventId
             }
         });
+        //check if user exists
         const userResult = await User.findOne({
             where: {
                 id: req.body.userId
@@ -26,7 +28,7 @@ exports.create = async (req, res, next) => {
             return;
         }
         else {
-            //check if exists
+            //check if member exists
             const userExists = await EventMember.findOne({
                 where: {
                     userId: req.body.userId,
@@ -37,6 +39,7 @@ exports.create = async (req, res, next) => {
                 throw new Error('Already member !');
             }
             else {
+                //create new member
                 EventMember.create({
                     userId: req.body.userId,
                     eventId: req.body.eventId
@@ -53,20 +56,18 @@ exports.create = async (req, res, next) => {
 // delete a member by id
 exports.remove = async (req, res) => {
     try {
+        //check if member exists
         const eventMember = await EventMember.findOne({
             where: {
-                id: req.params.inviteId
+                id: req.params.memberId
             }
         });
         if(eventMember === null){
             res.status(404).json();
         }
         else {
-            EventMember.destroy({
-                where: {
-                    id: eventMember.id
-                }
-            });
+            //delete member
+            eventMember.destroy();
             res.status(200).json();
         }
     }
@@ -77,12 +78,15 @@ exports.remove = async (req, res) => {
 
 //get a list of members for an event
 exports.list = async (req, res) => {
-
+    //get all members with eventId
     const data = await EventMember.findAll({
         where: {
             eventId: req.params.eventId
         },
-        attributes: ['userId']
+        include: {
+            model: User,
+            attributes: ['id','first_name']
+        }
     });
     res.status(200).json(data);
 }
@@ -93,6 +97,18 @@ exports.validationRules = method => {
         case 'create': {
             return [
                 body(['userId', 'eventId']).exists().isInt()
+            ]
+            break;
+        }
+        case 'get': {
+            return [
+                param('eventId').isInt()
+            ]
+            break;
+        }
+        case 'delete': {
+            return [
+                param('memberId').isInt()
             ]
             break;
         }
@@ -112,4 +128,4 @@ exports.validate = (req, res, next) => {
         next();
         return;
     }
-}
+};

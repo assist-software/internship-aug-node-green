@@ -1,128 +1,178 @@
 const db = require('../models');
 
-const {body,validationResult} = require('express-validator');
+const { body,param, validationResult } = require('express-validator');
 
 const Workout = db.Workout;
+const Event = db.Event;
 
 //create
 
-exports.create = (req, res) => {
-    //validate request
-    const { duration, heart_rate, calories, avg_speed, distance, workout_effectiveness, userId, eventId } = req.body;
 
-    Workout.create({
-        duration,
-        heart_rate,
-        calories,
-        avg_speed,
-        distance,
-        workout_effectiveness,
-        userId,
-        eventId
-    })
-    .then(data => {
-        res.status(200).send(data);
-    })
-    .catch(err => {
-        res.status(500).send({error: err.message});
-    })
+exports.create = async (req, res) => {
+
+
+    try {
+        const eventExists = await Event.findOne({
+            where: {
+                id: req.body.eventId
+            }
+        });
+        const workoutExists = await Workout.findOne({
+            where: {
+                userId: req.body.userId,
+                eventId: req.body.eventId
+            }
+        });
+        if (!eventExists) {
+            res.status(404).json();
+        }
+        if (workoutExists) {
+            throw new Error('Already Exists!');
+        }
+        const { duration, heart_rate, calories, avg_speed, distance, workout_effectiveness, userId, eventId } = req.body;
+
+        const workout = await Workout.create({
+            duration,
+            heart_rate,
+            calories,
+            avg_speed,
+            distance,
+            workout_effectiveness,
+            userId,
+            eventId
+        });
+        res.status(200).json(workout);
+    }
+    catch (err) {
+        res.status(500).send({ message: err.message });
+    }
 };
 
 //update workout
 
-exports.update = (req, res) => {
-    //Validate request
-    const id = req.params.workoutId;
-    Workout.update(req.body,{
-        where: {
-            id: id
+exports.update = async (req, res) => {
+    try {
+        const id = req.params.workoutId;
+        //check if workout exists
+        const workout = await Workout.findOne({
+            where: {
+                id: id
+            }
+        });
+        if (!workout) {
+            res.status(404).json();
+            return;
         }
-    })
-    .then(num => {
-        if(num == 1){
-            res.status(200).send();
-        } else {
-            res.status(404).send({ error: 'Workout not found!!'});
+        if (req.body.eventId) {
+            const eventExists = await Event.findOne({
+                where: {
+                    id: req.body.eventId
+                }
+            });
+
+            if (!eventExists) {
+                throw new Error('Event does not exists');
+            }
         }
-    })
-    .catch(err => {
-        res.status(500).send({ errors: err.message });
-    });
+        //update curent instance
+        Object.keys(req.body).forEach(value => workout[value] = req.body[value]);
+        workout.save();
+        res.status(200).json(workout);
+    }
+    catch (err) {
+        res.status(500).send({ message: err.message });
+    }
 };
 
 //get workout by id
-exports.get = (req, res) => {
-    const id = req.params.workoutId;
-
-    Workout.findByPk(id)
-        .then(workout => {
-            if(workout){
-                res.status(200).send(workout);
-            } else {
-                res.status(404).send();
+exports.get = async (req, res) => {
+    try {
+        const id = req.params.workoutId;
+        const workout = await Workout.findOne({
+            where: {
+                id: id
             }
-        })
-        .catch(err => {
-            res.status(500).send({ message: err.message});
         });
+        if (workout) {
+            res.status(200).json(workout);
+        }
+        else {
+            res.status(404).json();
+        }
+    }
+    catch (err) {
+        res.status(500).send({ message: err.message });
+    }
 }
 
 // delete workout by id
 
-exports.delete = (req, res) => {
-    
-    const id = req.params.workoutId;
+exports.delete = async (req, res) => {
 
-    Workout.destroy({
-        where: {
-            id: id
-        }
-    })
-    .then(num => {
-        if(num === 1) {
-            res.status(200).send();
+    try {
+        const id = req.params.workoutId;
+        const workout = await Workout.findOne({
+            where: {
+                id: id
+            }
+        });
+
+        if (workout) {
+            workout.destroy();
+            res.status(200).json();
         }
         else {
-            res.status(404).send();
+            res.status(404).json();
         }
-    })
-    .catch(err => {
-        res.status(500).json(err.message);
-    })
+    }
+    catch (err) {
+        res.status(500).send({ message: err.message });
+    }
 };
 
 
-exports.search = (req, res) => {
-
-    Workout.findAll()
-        .then(workouts => {
-            const newWorkouts = workouts.filter(workout => {
-                return Object.keys(req.body).every(key => workout[key] === req.body[key]);
-            });
-            res.status(200).json(newWorkouts);
-        })
-        .catch(err =>{
-            res.status(500).json(err);
-        })
+exports.search = async (req, res) => {
+    const acceptedFields = ['duration','heart_rate','calories','avg_speed','distance','workout_effectiveness','userId','eventId'];
+    const workouts = await Workout.findAll();
+    const newWorkouts = workouts.filter(workout => {
+        return Object.keys(req.body).filter(keyValue => acceptedFields.includes(keyValue)).every(key => workout[key] === req.body[key]);
+    });
+    res.status(200).json(newWorkouts);
 }
 
 
 exports.validationRules = method => {
 
-    switch(method) {
-        case 'create' : {
+    switch (method) {
+        case 'create': {
             return [
-                body(['duration','heart_rate','calories','avg_speed','distance']).exists().notEmpty().isFloat(),
+                body(['duration', 'heart_rate', 'calories', 'avg_speed', 'distance']).exists().notEmpty().isFloat(),
                 body('workout_effectiveness').exists().isString().notEmpty(),
-                body(['userId','eventId']).exists().isInt()
+                body(['userId', 'eventId']).exists().isInt()
             ]
             break;
         }
-        case 'updateAndSearch' : {
+        case 'update': {
             return [
-                body(['duration','heart_rate','calories','avg_speed','distance']).optional().notEmpty().isFloat(),
+                body(['duration', 'heart_rate', 'calories', 'avg_speed', 'distance']).optional().notEmpty().isFloat(),
                 body('workout_effectiveness').optional().isString().notEmpty(),
-                body(['userId','eventId']).optional().isInt()
+                body(['userId', 'eventId']).optional().isInt(),
+                param('workoutId').exists().isInt()
+            ]
+            break;
+        }
+        case 'search': {
+            return [
+                body(['duration', 'heart_rate', 'calories', 'avg_speed', 'distance']).optional().notEmpty().isFloat(),
+                body('workout_effectiveness').optional().isString().notEmpty(),
+                body(['userId', 'eventId']).optional().isInt()
+            ]
+            break;
+        }
+
+        case 'verifyWorkoutId': {
+            return [
+                param('workoutId').exists().isInt()
             ]
             break;
         }
@@ -131,13 +181,13 @@ exports.validationRules = method => {
 
 
 exports.validate = (req, res, next) => {
-    
+
     const errors = validationResult(req);
 
-    if(!errors.isEmpty()){
+    if (!errors.isEmpty()) {
         res.status(422).json({ errors: errors.array() });
         return;
     }
     next();
-    return ;
+    return;
 }
