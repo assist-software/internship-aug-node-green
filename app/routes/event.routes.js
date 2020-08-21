@@ -12,7 +12,7 @@ module.exports = app => {
     Router.post('/create', auth.authenticate(),upload.single('event_cover'), event.createValidator(), event.validate, event.create);
     Router.post('/search', auth.authenticate(), event.search);
     Router.get('/:eventId', auth.authenticate(), event.get);
-    Router.put('/:eventId', auth.authenticate(), event.updateValidator(), event.validate, event.update);
+    Router.put('/:eventId', auth.authenticate(),upload.single('event_cover'), event.updateValidator(), event.validate, event.update);
     Router.delete('/:eventId', auth.authenticate(), event.delete);
 
     //get all events related to an user
