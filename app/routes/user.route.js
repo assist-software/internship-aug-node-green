@@ -18,5 +18,6 @@ module.exports = app => {
 
     router.delete('/:userId',auth.authenticate(),users.validationRules('verifyUserId'),users.validate, users.delete);
 
+
     app.use('/api/user',router);
 };

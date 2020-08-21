@@ -13,7 +13,7 @@ const validator = require('express-validator');
 //const eventRoutes = require('./app/routes/event.routes');
 //const clubRoutes= require('./app/routes/club.routes');
 //const clubInviteRoutes=require('./app/routes/club/invite.routes');
-global.__basedir = __dirname;
+//global.__basedir = __dirname;
 
 const app = express();
 
@@ -29,7 +29,6 @@ app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.static('images'));
 
 //set images as static folder
 app.use('/images',express.static('images'));
