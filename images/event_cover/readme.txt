@@ -1,1 +1,0 @@
-Save here events covers

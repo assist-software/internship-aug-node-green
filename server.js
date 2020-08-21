@@ -13,8 +13,11 @@ const validator = require('express-validator');
 //const eventRoutes = require('./app/routes/event.routes');
 //const clubRoutes= require('./app/routes/club.routes');
 //const clubInviteRoutes=require('./app/routes/club/invite.routes');
+global.__basedir = __dirname;
 
 const app = express();
+
+
 
 const corsOptions = {
   origin: "http://localhost:8081"
@@ -26,7 +29,14 @@ app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(express.static('images'));
+
+//set images as static folder
+app.use('/images',express.static('images'));
+
+
 // if you need to drop the existing table and resync database use {force: true}
+/*
 db.sequelize.sync({ force: true })
   .then(() => {
     let hardcodedData = require('./app/config/db.hardcodeData');
@@ -35,7 +45,8 @@ db.sequelize.sync({ force: true })
       data();
    }
 });
-//db.sequelize.sync();
+*/
+db.sequelize.sync();
 
 /* file upload middleware
 const fileUpload = require('express-fileupload');

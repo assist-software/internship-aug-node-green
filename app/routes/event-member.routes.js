@@ -10,10 +10,10 @@ module.exports = app => {
     router.post('/create',auth.authenticate(),events.validationRules('create'),events.validate,events.create);
 
     //get a list of users by eventId
-    router.get('/:eventId',auth.authenticate(),events.list);
+    router.get('/:eventId',events.validationRules('get'),events.validate,events.list);
     
     //delete a member by inviteId
-    router.delete('/remove/:inviteId',auth.authenticate(),events.remove);
+    router.delete('/remove/:memberId',events.validationRules('delete'),events.validate,events.remove);
 
     app.use('/api/event/member',router);
 };
