@@ -28,17 +28,22 @@ db.sequelize.sync({ force: true })
       let data = hardcodedData[i];
       data();
    }
-}); */
+}); 
+*/
+
 const hardocodedData = require('./app/config/db.hardcodeData2');
 db.sequelize.sync({force: true}).then(() => {
   hardocodedData.populateDb();
 });
-
+//hardocodedData.populateDb();
 //db.sequelize.sync();
 
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
+  //res.header("Access-Control-Allow-Methods", "*");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   next();
 });
 

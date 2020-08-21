@@ -63,9 +63,13 @@ db.EventMember.belongsTo(db.User,{allowNull: false});
 db.EventMember.belongsTo(db.Event,{allowNull: false});
 
 //club assosiations
-db.Club.belongsTo(db.User,{as:'owner'});
+db.Club.belongsTo(db.User,{as:'owner', constraints: false});
 //db.User.hasMany(db.Club);
 //------
+db.Club.belongsTo(db.Sport,{
+  allowNull:false
+})
+
 db.ClubInvite.belongsTo(db.Club,{
   allowNull:false
 });
@@ -106,7 +110,8 @@ db.Workout.belongsTo(db.User, {
 })
 db.Workout.belongsTo(db.Event, {
   as: 'event',
-  allowNull: false
+  allowNull: false,
+  constraints: false
 })
 
 module.exports = db;

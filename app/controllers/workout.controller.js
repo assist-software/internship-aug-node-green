@@ -24,7 +24,7 @@ exports.create = (req, res) => {
         res.status(200).send(data);
     })
     .catch(err => {
-        res.status(500);
+        res.status(500).send({error: err.message});
     })
 };
 
@@ -63,7 +63,7 @@ exports.get = (req, res) => {
             }
         })
         .catch(err => {
-            res.status(500).send({ message: error.message});
+            res.status(500).send({ message: err.message});
         });
 }
 

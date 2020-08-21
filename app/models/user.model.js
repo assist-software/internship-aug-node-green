@@ -40,7 +40,7 @@ module.exports = (sequelize, Sequelize) => {
         allowNull: true
        },
        profile_photo: {
-        type: Sequelize.BLOB,
+        type: Sequelize.STRING,
         allowNull: true
        }
     });

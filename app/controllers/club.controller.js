@@ -1,5 +1,8 @@
 const db=require("../models");
 const Club=db.Club;
+const ClubMembers = db.ClubMember;
+const Users = db.User;
+
 const { body, validationResult  }  = require('express-validator');
 
 exports.create=(req,res)=>{
@@ -25,7 +28,8 @@ exports.create=(req,res)=>{
         //create a club
         const club={
           name:req.body.name,
-          ownerId:req.body.ownerId
+          ownerId:req.body.ownerId,
+          sportId:req.body.sportId
         }
         Club.create(club)
 
@@ -89,9 +93,9 @@ exports.findOne = (req, res) => {
 
 exports.findAll = (req, res) => {
 
-    Club.findAll()
+    Club.findAll({attributes:['id','name','ownerId',"sportId"]})
       .then(data => {
-        res.send(data);
+        res.status(200).send(data);
       })
       .catch(err => {
         res.status(500).send({
@@ -99,6 +103,88 @@ exports.findAll = (req, res) => {
             err.message || "Some error occurred while retrieving clubs."
         });
       });
+};
+
+var globalData = [];
+var photoArray = [];
+exports.findAllWithMembers = (req, res) => {
+
+  Club.findAll({attributes:['id','name','ownerId',"sportId"]})
+    .then(clubs => {
+      if(clubs) {
+        for(let i =0; i<clubs.length; i++) {
+          ClubMembers.findAll({
+            where: {
+              clubId: clubs[i].id
+            }
+          })
+          .then(members => {
+            Users.findOne({
+              where: {
+                id: clubs[i].ownerId
+              }
+            })
+            .then(user => {
+              if(user) {
+                let club = clubs[i];
+                let coachName = user.first_name; 
+                //globalData.push({club, coachName, members });
+
+                for(let j =0; j<members.length; j++){
+                  Users.findOne({
+                    where: {
+                      id: members[j].id
+                    }
+                  })
+                  .then(user => {
+                    let photo = user.profile_photo;
+                    photoArray.push({photo})
+
+                    if(j == members.length-1) {
+                      console.log(photoArray);
+                      globalData.push({club, coachName, photoArray });
+                      photoArray=[];
+                    }
+                  })
+                }
+
+                if(i == clubs.length-1) {
+                  res.status(200).json(globalData);
+                  globalData=[];
+                }
+                /*
+                for(let j =0; j<members.length; j++){
+                  Users.findOne({
+                    where: {
+                      id: members[j].id
+                    }
+                  })
+                  .then(user => {
+                    let photo = user.profile_photo;
+                    photoArray.push({photo})
+
+                    if(j == members.length-1) {
+                      globalData.push({club, coachName, photo });
+                      photo=[];
+                      
+                    } 
+                    
+                  })
+                }  
+                */ 
+            }
+          })
+        })
+      }
+    }
+     
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving clubs."
+      });
+    });
 };
 
 exports.search = (req,res)=>{
@@ -111,6 +197,7 @@ exports.search = (req,res)=>{
 
     const ownerId=req.body.ownerId;
     const name=req.body.name;
+    const sportId=req.body.sportId;
     if(ownerId&&name)
     {
       Club.findAll({where:{
@@ -185,14 +272,18 @@ exports.delete = (req, res) => {
   exports.validate=()=> {
     return [
     
+      body('sportId').exists().notEmpty().isInt(),
       body('ownerId').optional().isInt(),
       body('name').exists().notEmpty().isString()
       
     ]
   }
+
+
+
   exports.validateUpdate=()=>{
     return [
-    
+      body('sportId').optional().isInt(),
       body('ownerId').optional().isInt(),
       body('name').optional().isString().custom(value => {
         return Club.findOne({ where: {name: value}} ).then(club => {
@@ -207,6 +298,7 @@ exports.delete = (req, res) => {
   exports.validateSearch=()=>{
     return[
       body('ownerId').optional().isInt(),
+      body('sportId').optional().isInt(),
       body('name').optional().isString()     
     ]
   }

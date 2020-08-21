@@ -17,7 +17,7 @@ let getTokenPayload = (token) => {
 }
 
 exports.isAdmin = (req, res, next) => {
-    let token = req.headers["authorization"];
+    let token = req.headers["Authorization"];
     let decoded = getTokenPayload(token);
     if(decoded == 1) {
         next();
@@ -47,14 +47,30 @@ exports.isCoach = (req, res, next) => {
 
 exports.isAthlete = (req, res, next) => {
     let token = req.headers["authorization"];
+    
     let decoded = getTokenPayload(token);
-    if(decoded == 1) {
+    if(decoded == 3) {
+        next();
+        return;
+    }
+    else {
+        res.status(406).send({
+            message: 'Athlete role required'
+        });
+    } 
+    next();
+}
+
+exports.isAdminOrCoach = (req, res, next) => {
+    let token = req.headers["authorization"];
+    let decoded = getTokenPayload(token);
+    if(decoded == 1 || decoded == 2) {
         next();
         return;
     }
     else {
         res.status(403).send({
-            message: 'Athlete role required'
+            message: 'Admin or Coach role required'
         });
     }
 }

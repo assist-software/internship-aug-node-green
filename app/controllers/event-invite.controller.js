@@ -53,13 +53,13 @@ exports.create = async (req, res) => {
                     email: req.body.email,
                     eventId: req.body.eventId
                 });
-                /*
+                
                 const message = `Buna ziua,
                     Dorim sa va invitam la evenimentul: ${eventResult.name}.
                     Evenimentul are loc pe data: ${eventResult.date} la ora ${eventResult.time}.
                     Va asteptam!!!`;
                 sendEmail(message, [userResult.email]);
-                */
+                
                 res.status(200).json();
             }
         }

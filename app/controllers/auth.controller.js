@@ -105,7 +105,7 @@ exports.reset = (req, res) => {
             return res.status(404).send({message: "User with this email not found!!"});
         }
         // Daca userul a fost gasit, generam o parola noua
-        let newPass = Math.floor(Math.random()*99999) +10000; 
+        let newPass = Math.floor(Math.random()*9999999999) +1000000000; 
         let newHashPass = bcrypt.hashSync(`${newPass}`, 10);
 
         // Setare in db parola noua

@@ -6,7 +6,7 @@ module.exports = app => {
 
     const router = require('express').Router();
 
-    router.post('/api/coach',auth.authenticate() ,coach.setRole ,user.validate('create'), user.create);
+    router.post('/api/coach',/*auth.authenticate()*/ coach.setRole ,user.validate('create'), user.create);
     router.put('/api/coach/:coachId',auth.authenticate() ,coach.setId ,user.validate('update'), user.update);
     router.get('/api/coach/:coachId',auth.authenticate(), coach.getById);
     router.get('/api/coach', coach.get);

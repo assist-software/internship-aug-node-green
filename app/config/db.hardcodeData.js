@@ -59,7 +59,9 @@ let createUserBot = db.User.create({
   height: 185,
   weight: 75,
   age: 23,
-  roleId: '3'
+  roleId: '3',
+  primarySportId: 1,
+  secondarySportId: 2
 });
 
 
@@ -109,27 +111,53 @@ let createUserMory = db.User.create({
 
 let createClubRunners = db.Club.create({
     name: 'RunningClub',
-    ownerId: 4
+    ownerId: 4,
+    sportId: 1
 });
 let createClubTeamers = db.Club.create({
     name: 'TeamClub',
-    ownerId: 7
+    ownerId: 7,
+    sportId: 2
 });
 let createClubLifters = db.Club.create({
     name: 'LiftClub',
     ownerId: 3,
+    sportId: 1
 });
 let createClubRunnersv2 = db.Club.create({
   name: 'RunningClubv2',
-  ownerId: 4
+  ownerId: 4,
+  sportId: 3
 });
 let createClubTeamersv2 = db.Club.create({
   name: 'TeamClubv2',
-  ownerId: 4
+  ownerId: 4,
+  sportId: 3
 });
 let createClubLiftersv2 = db.Club.create({
   name: 'LiftClubv2',
-  ownerId: 7
+  ownerId: 7,
+  sportId: 1
+});
+
+let createMember1 = db.ClubMember.create({
+  userId: 1,
+  clubId: 1
+});
+
+let createMember2 = db.ClubMember.create({
+  userId: 2,
+  clubId: 1
+});
+
+let createMember3 = db.ClubMember.create({
+  userId: 3,
+  clubId: 2
+});
+
+let createMember4 = db.ClubMember.create({
+  userId: 4,
+  clubId: 2
 });
 
 let createEventMarathon = db.Event.create({
@@ -168,6 +196,17 @@ let createEventLiftUp = db.Event.create({
     event_cover: null
 });
 
+let createWorkout1 = db.Workout.create({
+  userId: 5,
+  eventId: 1,
+  duration: 1.30,
+  heart_rate: 80,
+  calories: 300,
+  avg_speed: 15,
+  distance: 10,
+  workout_effectiveness: 'Effective'
+});
+
 module.exports = [
     // Production hardcoded data
     createRoleAdministrator, 
@@ -178,6 +217,10 @@ module.exports = [
     createSportTeamsports,
     createSportWeightlifting,
     // Developement hardcoded data
+    createMember1,
+    createMember2,
+    createMember3,
+    createMember4,
     createUserJohn,
     createUserIulian,
     createUserMike,
@@ -192,5 +235,6 @@ module.exports = [
     createClubLiftersv2,
     createEventMarathon,
     createEventTeamFest,
-    createEventLiftUp
+    createEventLiftUp,
+    createWorkout1
 ]
