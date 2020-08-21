@@ -98,7 +98,7 @@ exports.update = (req, res) => {
             }
             const event_cover = (req.file) ? req.file.path : null;
             if (event_cover != null && event_cover !== event.event_cover) {
-                fs.unlinkSync(event.event_cover);
+                //fs.unlinkSync(event.event_cover);
                 event.event_cover = event_cover;
             }
             event.name = req.body.name,
@@ -108,14 +108,16 @@ exports.update = (req, res) => {
                 event.location = req.body.location,
                 event.radius = req.body.radius,
                 event.sportId = req.body.sportId,
-                event.event_cover = req.body.event_cover
+                event.event_cover = event_cover
             event.save();
             res.status(200).send({ message: event });
         })
         .catch(err => {
+            /*
             if (req.file) {
                 fs.unlinkSync(req.file.path);
             }
+            */
             res.send({ err: err.message })
         });
 };
@@ -157,10 +159,12 @@ exports.findAllEventsByUserId = async (req, res) => {
             include: {
                 model: Events,
                 attributes: {
-                    exclude: ['createdAt', 'updatedAt', 'id']
+                    exclude: ['createdAt', 'updatedAt','time','description','radius','clubId']
                 }
             },
-            attributes: ['eventId']
+            attributes: {
+                exclude: ['eventId']
+            }
         });
         const pending = await EventRequest.findAll({
             where: {
@@ -169,7 +173,7 @@ exports.findAllEventsByUserId = async (req, res) => {
             include: {
                 model: Events,
                 attributes: {
-                    exclude: ['createdAt', 'updatedAt', 'id']
+                    exclude: ['createdAt', 'updatedAt','time','description','radius','clubId']
                 }
             },
             attributes: ['eventId']
@@ -243,13 +247,13 @@ exports.createValidator = () => {
 exports.updateValidator = () => {
     return [
         //body('clubId', 'Invalid ID').exists().isInt().withMessage('ID must be integer'),
-        body('name', 'Inavlid name').exists().isLength({ min: 5 }).withMessage('Too short name'),
-        body('date', 'Invalid date format').exists(),
-        body('time').exists(),
-        body('description', 'Invalid description').exists().isString(),
-        body('location', 'Invalid location').exists().isString(),
-        body('radius', 'Invalid radius').exists().isInt(),
-        body('sportId', 'Invalid sport type id').exists().isInt()
+        body('name', 'Inavlid name').optional().isLength({ min: 5 }).withMessage('Too short name'),
+        body('date', 'Invalid date format').optional(),
+        body('time').optional(),
+        body('description', 'Invalid description').optional().isString(),
+        body('location', 'Invalid location').optional().isString(),
+        body('radius', 'Invalid radius').optional().isInt(),
+        body('sportId', 'Invalid sport type id').optional().isInt()
         //body('event_cover').exists()  
     ]
 }
