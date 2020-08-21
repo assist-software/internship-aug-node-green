@@ -97,13 +97,16 @@ let createUserMory = db.User.create({
 });
 
 let createClubRunners = db.Club.create({
-    name: 'RunningClub'
+    name: 'RunningClub',
+    sportId:1
 });
 let createClubTeamers = db.Club.create({
-    name: 'TeamClub'
+    name: 'TeamClub',
+    sportId:2
 });
 let createClubLifters = db.Club.create({
-    name: 'LiftClub'
+    name: 'LiftClub',
+    sportId:3
 });
 
 let createEventMarathon = db.Event.create({

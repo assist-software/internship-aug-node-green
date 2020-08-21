@@ -4,6 +4,7 @@ const Club=db.Club;
 const User=db.User;
 const ClubInvite=db.ClubInvite;
 const ClubMember=db.ClubMember;
+const sendEmail = require('../utils/email.utils.js');
 
 exports.create = (req, res) => {
 
@@ -70,6 +71,8 @@ exports.create = (req, res) => {
                 email:req.body.email,
               })
               .then(data => {
+                const message=`Buna ziua! Avem placerea sa va invitam in clubul =${club.name}.`
+                sendEmail(message,[req.body.email])
                 res.status(200).send(data);
               })
               .catch(err => {

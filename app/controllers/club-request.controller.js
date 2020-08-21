@@ -1,45 +1,85 @@
 const db = require('../models/index');
+const { ClubRequest, ClubMember } = require('../models/index');
 const Clubs = db.Club;
 const Users = db.User;
 const ClubRequests = db.ClubRequest;
 
 
+
 exports.create = (req, res) => {
+
+
+//check if the clubId exists.
+
     Clubs.findOne({
         where: {
             id: req.body.clubId
         }
     })
-    .then(club => {
+    .then((club) => {
         if(!club) {
-            res.status(404).send({message: 'Club not found'});
+            res.status(404).send({message: "club not found"});
+            return
         }
-        else {
-            Users.findOne({
-                where: {
-                    id: req.body.userId
-                }
+
+//check if the user exists.
+
+        Users.findOne({where:{id:req.body.userId}})
+        .then(user=> {
+          if(!user){
+            res.send({message:"User not found!!"});
+            return
+          }
+
+//check if the user is already part of the club
+
+          ClubMember.findOne({where:{
+            clubId:club.id,
+            userId:user.id
+          }
+          })
+          .then(clubmember=>{
+            if(clubmember)
+            {
+              res.send({message:"The member exists!"})
+              return
+            }
+
+//check if the invite has been already sent
+
+            ClubRequest.findOne({where:{
+              clubId:req.body.clubId,
+              userId:req.body.userId
+            }
             })
-            .then(user => {
-                if(!user) {
-                    res.status(404).send({message: 'User not found'});
-                }
-                else {
-                    db.ClubRequest.create({
-                        userId: req.body.userId,
-                        clubId: req.body.clubId
-                    });
-                    res.status(200).send({message: 'Club request created'});
-                }
+            .then(request=>{
+              if(request)
+              {
+                res.send({message:"The request has been already sent !!"})
+                return
+              }
+
+//create the invite
+              
+              ClubRequest.create({
+                clubId:req.body.clubId,
+                userId:req.body.userId,
+              })
+              .then(data => {
+                res.status(200).send(data);
+              })
+              .catch(err => {
+                res.status(500).send({
+                  message:
+                    err.message || "Some error occurred while creating the Club."
+                });
+              });
+
             })
-            .catch(err => {
-                res.send({error: err.message});
-            })
-        }
+          })
+        })    
     })
-    .catch(err => {
-        res.send({error: err.message});
-    })
+    
 }
 
 exports.accept = (req, res) => {
