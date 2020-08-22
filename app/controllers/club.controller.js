@@ -109,25 +109,6 @@ exports.findAll = (req, res) => {
 var globalData = [];
 var photoArray = [];
 exports.findAllWithMembers = (req, res) => {
-  /*
-  const clubResponse = [];
-  Club.findAll({attributes:['id','name','ownerId',"sportId"]})
-  .then(club => {
-    clubResponse = club;
-    const ownerIds = club.map(c => c.dataValues.ownerId);
-    return User.findAll({
-      where: {
-        id: ownerIds
-      }
-    })
-  }).then(users => {
-    clubResponse = clubResponse.map(c => {
-      c.dataValues.coachName = users.filter(user => user.dataValues.id === c.dataValues.ownerId)[0].first_name;
-      return c;
-    })
-
-  }) 
-*/
   Club.findAll({attributes:['id','name','ownerId',"sportId"]})
     .then(clubs => {
       if(clubs) {
@@ -172,26 +153,6 @@ exports.findAllWithMembers = (req, res) => {
                   res.status(200).json(globalData);
                   globalData=[];
                 }
-                /*
-                for(let j =0; j<members.length; j++){
-                  Users.findOne({
-                    where: {
-                      id: members[j].id
-                    }
-                  })
-                  .then(user => {
-                    let photo = user.profile_photo;
-                    photoArray.push({photo})
-
-                    if(j == members.length-1) {
-                      globalData.push({club, coachName, photo });
-                      photo=[];
-                      
-                    } 
-                    
-                  })
-                }  
-                */ 
             }
           })
         })

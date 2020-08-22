@@ -94,6 +94,21 @@ exports.get = (req, res) => {
     })
 }
 
+exports.newGet = async (req, res) => {
+    try {
+        const users = await Users.findAll({
+            where: {
+                roleId: 2
+            },
+            attributes: ['id', 'first_name', 'last_name', 'email']
+        })
+        res.json(users);
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
 
 exports.getById = (req, res) => {
     Users.findOne({

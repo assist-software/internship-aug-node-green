@@ -7,6 +7,15 @@ const passport = require('passport');
 const {authJwt} = require('./app/middlewares/authJwt');
 const validator = require('express-validator');
 
+
+
+// API Routes
+//const authRoutes = require('./app/routes/auth.routes');
+//const eventRoutes = require('./app/routes/event.routes');
+//const clubRoutes= require('./app/routes/club.routes');
+//const clubInviteRoutes=require('./app/routes/club/invite.routes');
+//global.__basedir = __dirname;
+
 const app = express();
 
 
@@ -21,7 +30,6 @@ app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.static('images'));
 
 //set images as static folder
 app.use('/images',express.static('images'));
@@ -38,13 +46,13 @@ db.sequelize.sync({ force: true })
    }
 }); 
 */
-
+/*
 const hardocodedData = require('./app/config/db.hardcodeData2');
 db.sequelize.sync({force: true}).then(() => {
   hardocodedData.populateDb();
-});
+}); */
 //hardocodedData.populateDb();
-//db.sequelize.sync();
+db.sequelize.sync();
 
 
 app.use((req, res, next) => {

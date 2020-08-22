@@ -75,6 +75,7 @@ exports.get = (req, res) => {
         .then(event => {
             if (!event) {
                 res.status(404).send({ message: "Event ID not found" });
+                return;
             }
 
             if (event.event_cover) {
@@ -86,40 +87,43 @@ exports.get = (req, res) => {
         .catch(err => res.send({ err: err.message }));
 }
 
-exports.update = (req, res) => {
-    Events.findOne({
-        where: {
-            id: req.params.eventId
-        }
-    })
-        .then(event => {
-            if (!event) {
-                res.status(404).send({ message: "Event ID not found" });
+exports.update = async (req, res) => {
+    try {
+        //check if event exists
+        const event = await Events.findOne({
+            where: {
+                id: req.params.eventId
             }
-            const event_cover = (req.file) ? req.file.path : null;
-            if (event_cover != null && event_cover !== event.event_cover) {
-                //fs.unlinkSync(event.event_cover);
-                event.event_cover = event_cover;
-            }
-            event.name = req.body.name,
-                event.date = req.body.date,
-                event.time = req.body.time,
-                event.description = req.body.description,
-                event.location = req.body.location,
-                event.radius = req.body.radius,
-                event.sportId = req.body.sportId,
-                event.event_cover = event_cover
-            event.save();
-            res.status(200).send({ message: event });
-        })
-        .catch(err => {
-            /*
+        });
+
+        if (!event) {
             if (req.file) {
                 fs.unlinkSync(req.file.path);
             }
-            */
-            res.send({ err: err.message })
-        });
+            res.status(404).json({ error: 'Event not found!!' });
+            return;
+        }
+        //set event_cover image
+        const event_cover = (req.file) ? req.file.path : null;
+
+        if (event_cover !== null) {
+            if (event.event_cover) {
+                fs.unlinkSync(event.event_cover);
+            }
+            event.event_cover = event_cover;
+        }
+        //update event
+        Object.keys(req.body).forEach(value => event[value] = req.body[value]);
+        event.save();
+        res.status(200).json();
+
+    }
+    catch (err) {
+        if (req.file) {
+            fs.unlinkSync(req.file.path);
+        }
+        res.status(500).send({ message: err.message });
+    }
 };
 
 exports.delete = (req, res) => {
@@ -159,12 +163,13 @@ exports.findAllEventsByUserId = async (req, res) => {
             include: {
                 model: Events,
                 attributes: {
-                    exclude: ['createdAt', 'updatedAt','time','description','radius','clubId']
+                    exclude: ['createdAt', 'updatedAt', 'time', 'description', 'radius', 'clubId']
                 }
             },
             attributes: ['eventId']
-            
+        
         });
+
         const pending = await EventRequest.findAll({
             where: {
                 userId: id
@@ -172,7 +177,7 @@ exports.findAllEventsByUserId = async (req, res) => {
             include: {
                 model: Events,
                 attributes: {
-                    exclude: ['createdAt', 'updatedAt','time','description','radius','clubId']
+                    exclude: ['createdAt', 'updatedAt', 'time', 'description', 'radius', 'clubId']
                 }
             },
             attributes: ['eventId']
@@ -194,7 +199,7 @@ exports.findEventsByClub = async (req, res) => {
             attributes: ['clubId']
         });
         const intClubs = clubs.map(club => club.clubId);
-        
+
         const events = await Events.findAll({
             where: {
                 clubId: {
@@ -205,7 +210,7 @@ exports.findEventsByClub = async (req, res) => {
                 exclude: ['createdAt', 'updatedAt', 'time', 'description', 'clubId', 'radius']
             }
         });
-        
+
         res.status(200).json(events);
     }
     catch (err) {

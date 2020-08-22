@@ -67,13 +67,20 @@ exports.update = async (req, res) => {
             }
         });
         if (user === null) {
+            if (req.file) {
+                fs.unlinkSync(req.file.path);
+            }
             res.status(404).json();
+
             return;
         }
         //verify profile_photo
         const profile_photo = (req.file) ? req.file.path : null;
-        if (profile_photo != null && profile_photo !== user.profile_photo) {
-            fs.unlinkSync(user.profile_photo);
+
+        if (profile_photo !== null && profile_photo !== user.profile_photo) {
+            if (user.profile_photo) {
+                fs.unlinkSync(user.profile_photo);
+            }
             user.profile_photo = profile_photo;
         }
         //for changing email
