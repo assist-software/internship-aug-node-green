@@ -98,7 +98,7 @@ exports.update = (req, res) => {
             }
             const event_cover = (req.file) ? req.file.path : null;
             if (event_cover != null && event_cover !== event.event_cover) {
-                fs.unlinkSync(event.event_cover);
+                //fs.unlinkSync(event.event_cover);
                 event.event_cover = event_cover;
             }
             event.name = req.body.name,
@@ -113,9 +113,11 @@ exports.update = (req, res) => {
             res.status(200).send({ message: event });
         })
         .catch(err => {
+            /*
             if (req.file) {
                 fs.unlinkSync(req.file.path);
             }
+            */
             res.send({ err: err.message })
         });
 };
@@ -157,10 +159,11 @@ exports.findAllEventsByUserId = async (req, res) => {
             include: {
                 model: Events,
                 attributes: {
-                    exclude: ['createdAt', 'updatedAt', 'id']
+                    exclude: ['createdAt', 'updatedAt','time','description','radius','clubId']
                 }
             },
             attributes: ['eventId']
+            
         });
         const pending = await EventRequest.findAll({
             where: {
@@ -169,7 +172,7 @@ exports.findAllEventsByUserId = async (req, res) => {
             include: {
                 model: Events,
                 attributes: {
-                    exclude: ['createdAt', 'updatedAt', 'id']
+                    exclude: ['createdAt', 'updatedAt','time','description','radius','clubId']
                 }
             },
             attributes: ['eventId']
@@ -249,8 +252,8 @@ exports.updateValidator = () => {
         body('description', 'Invalid description').optional().isString(),
         body('location', 'Invalid location').optional().isString(),
         body('radius', 'Invalid radius').optional().isInt(),
-        body('sportId', 'Invalid sport type id').optional().isInt(),
-        body('event_cover').optional()
+        body('sportId', 'Invalid sport type id').optional().isInt()
+        //body('event_cover').exists()  
     ]
 }
 

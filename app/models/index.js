@@ -55,10 +55,10 @@ db.ClubRequest.belongsTo(db.Club);
 
 //event assosiations
 db.EventInvite.belongsTo(db.Event);
-db.EventRequest.belongsTo(db.Event);
+db.EventRequest.belongsTo(db.Event, {constraints: false});
 db.EventRequest.belongsTo(db.User,{allowNull: false});
-db.Event.belongsTo(db.Sport, {allowNull: false});
-db.Event.belongsTo(db.Club);
+db.Event.belongsTo(db.Sport, {allowNull: false, constraints: false});
+db.Event.belongsTo(db.Club,  {constraints: false});
 db.EventMember.belongsTo(db.User,{allowNull: false});
 db.EventMember.belongsTo(db.Event,{allowNull: false});
 

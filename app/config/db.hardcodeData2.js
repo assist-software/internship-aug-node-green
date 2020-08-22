@@ -234,6 +234,16 @@ exports.populateDb = async () => {
       clubId: 4
   });
 
+  db.EventMember.create({
+      userId: 3,
+      eventId: 1
+  });
+
+  db.EventRequest.create({
+      userId: 3,
+      eventId: 2
+  });
+
   }
   catch (err) {
     console.log(err.message);
