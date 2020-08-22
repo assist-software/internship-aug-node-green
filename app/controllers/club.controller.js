@@ -1,8 +1,12 @@
 const db=require("../models");
 const Club=db.Club;
-
-
+const ClubMember=db.ClubMember;
+const Event=db.Event;
+const User=db.User;
+const { Op } = require("sequelize");
 const { body, validationResult  }  = require('express-validator');
+
+const clubMemberRoutes = require("../routes/club-member.routes");
 
 exports.create=(req,res)=>{
 
@@ -89,6 +93,106 @@ exports.findOne = (req, res) => {
       });
 };
 
+exports.findDetails=(req,res)=>{
+  const id=req.params.clubId;
+  var memberIds=[];
+  var response={
+    members:[],
+    owner:[],
+    ownerClubs:[],
+    events:[]
+  }
+  Club.findByPk(id)
+  .then(club=>{
+    User.findOne({
+      attributes:['id','first_name','last_name'],
+      where:{id:club.ownerId}})
+    .then(user=>{
+      response.owner=user;
+      Club.findAll({
+        attributes:['name'],
+        where:{ownerId:user.id}})
+      .then(club=>{
+        response.ownerClubs=club;
+        
+        ClubMember.findAll({where:{clubId:id}})
+        .then(member=>{
+          if(member)
+          {
+            for(let i=0;i<member.length;i++)
+            {
+              memberIds.push(member[i].userId)
+            }
+          }
+          User.findAll({
+            attributes:['first_name','last_name'],
+            where:{
+              id:{[Op.in]:memberIds}
+          }}).then(user=>{
+            response.members=user;
+            Event.findAll({attributes:{exclude:['createdAt','updatedAt']},
+            where:{clubId:id}})
+            .then(event=>{
+              response.events=event
+              res.send(response);
+            })
+            
+          })
+        })
+      })
+      
+    })
+  })
+  .catch(err => {
+    res.status(404).send({
+      message: "Error retrieving Club with id=" + id
+    });
+  })
+  /*Club.findByPk(id)
+  .then(club=>{
+    if(club)
+    {
+      User.findOne({
+        attributes:['id','name'],
+        where:{id:club.ownerId}
+      })
+    }
+    
+    .then(user=>{
+      response.owner=user
+      res.send(club.ownerId)
+    })
+    
+  })
+  /*.catch(err => {
+    res.status(500).send({
+      message: "Error retrieving Club with id=" + id
+    });
+  });*/
+  /*
+  ClubMember.findAll({
+    where:{
+      clubId:id
+    }
+  }).then(data=>{
+      if(data){
+        for(let i=0;i<data.length;i++)
+          {
+            memberIds.push(data[i].userId)
+          }
+      }
+      User.findAll({
+        attributes:['id','name'],
+        where:{
+          id:{[Op.in]:memberIds}
+        }
+      }).then(user=>{
+        response.members=user
+        User.findOne({where:{id:club.owner}})
+      })
+  })
+  */
+}
 
 exports.findAll = (req, res) => {
 
