@@ -12,8 +12,5 @@ module.exports = app => {
     router.get('/api/coach', coach.get);
     router.delete('/api/coach/:coachId', auth.authenticate() ,coach.setId, user.delete );
     
-    // Test
-    router.get('/api/coach/test/get', coach.newGet);
-    
     app.use(router);
 };

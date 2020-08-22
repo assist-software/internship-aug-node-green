@@ -5,6 +5,7 @@ const User=db.User;
 const ClubMember=db.ClubMember;
 const ClubRequest=db.ClubRequest;
 const { Op } = require("sequelize");
+const clubMemberRoutes = require("../routes/club-member.routes");
 exports.create=(req,res)=>{
 
     const errors = validationResult(req);
@@ -98,7 +99,7 @@ exports.sendStatus=(req,res)=>{
   .then(data=>{
     if(data)
     {
-      //response.joined=data;
+
       for(let i=0;i<data.length;i++)
       {
         clubIds.push(data[i].clubId)
@@ -118,7 +119,6 @@ exports.sendStatus=(req,res)=>{
       .then(data=>{
         if(data)
         {
-          //response.pending=data
           for(let i=0;i<data.length;i++)
           {
             clubIdsRequest.push(data[i].clubId)
@@ -150,14 +150,12 @@ exports.sendStatus=(req,res)=>{
           })
         })
 
-    })
-
-    
-      
+      })
 
     })
   }) 
 }
+
 exports.validate = () => {
     
     return [

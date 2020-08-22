@@ -111,57 +111,22 @@ let createUserMory = db.User.create({
 
 let createClubRunners = db.Club.create({
     name: 'RunningClub',
-    ownerId: 4,
-    sportId: 1
+    sportId:1,
+    ownerId:1
 });
 let createClubTeamers = db.Club.create({
     name: 'TeamClub',
-    ownerId: 7,
-    sportId: 2
+    sportId:2,
+    ownerId:1
 });
 let createClubLifters = db.Club.create({
     name: 'LiftClub',
-    ownerId: 3,
-    sportId: 1
-});
-let createClubRunnersv2 = db.Club.create({
-  name: 'RunningClubv2',
-  ownerId: 4,
-  sportId: 3
-});
-let createClubTeamersv2 = db.Club.create({
-  name: 'TeamClubv2',
-  ownerId: 4,
-  sportId: 3
-});
-let createClubLiftersv2 = db.Club.create({
-  name: 'LiftClubv2',
-  ownerId: 7,
-  sportId: 1
-});
-
-let createMember1 = db.ClubMember.create({
-  userId: 1,
-  clubId: 1
-});
-
-let createMember2 = db.ClubMember.create({
-  userId: 2,
-  clubId: 1
-});
-
-let createMember3 = db.ClubMember.create({
-  userId: 3,
-  clubId: 2
-});
-
-let createMember4 = db.ClubMember.create({
-  userId: 4,
-  clubId: 2
+    sportId:3,
+    ownerId:2
 });
 
 let createEventMarathon = db.Event.create({
-    clubId: 1,
+    clubId: 2,
     name: 'Marathon',
     date: '10.10.2021',
     time: '13:00',
