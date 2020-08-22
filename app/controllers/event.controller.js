@@ -162,9 +162,7 @@ exports.findAllEventsByUserId = async (req, res) => {
             },
             include: {
                 model: Events,
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt', 'time', 'description', 'radius', 'clubId']
-                }
+                attributes: ['id','name','date','location','sportId','event_cover']
             },
             attributes: ['eventId']
         });
@@ -174,18 +172,37 @@ exports.findAllEventsByUserId = async (req, res) => {
             },
             include: {
                 model: Events,
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt', 'time', 'description', 'radius', 'clubId']
-                }
+                attributes: ['id','name','date','location','sportId','event_cover']
             },
             attributes: ['eventId']
         });
+        joined.forEach(object => {
+            if (object.event.event_cover) {
+                object.event.event_cover = `${req.protocol}://${req.headers.host}/${object.event.event_cover}`;
+            }
+        });
+        pending.forEach(object => {
+            if (object.event.event_cover) {
+                object.event.event_cover = `${req.protocol}://${req.headers.host}/${object.event.event_cover}`;
+            }
+        });
+
         res.status(200).json({ joined, pending });
     }
     catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
+
+//verify if event have event_cover
+exports.verifyEventCover = async (eventId) => {
+    try{
+        const event = await Event.findOne()
+    }
+    catch(err){
+        return false;
+    }
+}
 
 //find all events by ClubId and UserId
 exports.findEventsByClub = async (req, res) => {
@@ -206,6 +223,11 @@ exports.findEventsByClub = async (req, res) => {
             },
             attributes: {
                 exclude: ['createdAt', 'updatedAt', 'time', 'description', 'clubId', 'radius']
+            }
+        });
+        events.forEach(object => {
+            if (object.event.event_cover) {
+                object.event.event_cover = `${req.protocol}://${req.headers.host}/${object.event.event_cover}`;
             }
         });
 
