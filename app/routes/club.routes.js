@@ -7,6 +7,7 @@ module.exports= app => {
     router.put("/:id",clubs.validateUpdate(),clubs.update);
     router.get("/:id",clubs.findOne);
     router.get("/",clubs.findAll);
+    router.get("/details/:clubId",clubs.findDetails);
     router.post("/search",clubs.validateSearch(),clubs.search);
     router.delete("/:id",clubs.delete);
     app.use('/api/club',router); 
