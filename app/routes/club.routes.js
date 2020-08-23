@@ -12,7 +12,6 @@ module.exports= app => {
     router.delete("/:id",clubs.delete);
     //Custom
     router.get('/list/all', clubs.findAllWithMembers);
-    
 
     app.use('/api/club',router); 
 }

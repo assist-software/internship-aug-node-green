@@ -38,6 +38,25 @@ exports.get = async (req, res) => {
     }
 }
 
+exports.deleteListOfCoaches = async (req, res) => {
+    try {
+        const idList = req.body.idList;
+        const coaches = await Users.findAll({
+            where: {
+                id: {
+                    [Op.in]: idList
+                },
+                roleId: 2
+            }
+        });
+        coaches.forEach(coach => coach.destroy());
+        res.status(200).json();
+    }
+    catch(err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 
 exports.getById = (req, res) => {
     Users.findOne({
