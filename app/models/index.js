@@ -105,13 +105,11 @@ db.User.belongsTo(db.Sport, {
 
 //Workout assosiations
 db.Workout.belongsTo(db.User, {
-  as: 'user',
   allowNull: false
 })
 db.Workout.belongsTo(db.Event, {
-  as: 'event',
-  allowNull: false,
-  constraints: false
+  
+  allowNull: false
 })
 
 module.exports = db;

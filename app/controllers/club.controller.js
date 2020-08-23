@@ -210,69 +210,8 @@ exports.findAll = (req, res) => {
       });
 };
 
-var globalData = [];
-var photoArray = [];
-exports.findAllWithMembers = (req, res) => {
-  Club.findAll({attributes:['id','name','ownerId',"sportId"]})
-    .then(clubs => {
-      if(clubs) {
-        console.log(clubs);
-        for(let i =0; i<clubs.length; i++) {
-          ClubMember.findAll({
-            where: {
-              clubId: clubs[i].id
-            }
-          })
-          .then(members => {
-            User.findOne({
-              where: {
-                id: clubs[i].ownerId
-              }
-            })
-            .then(user => {
-              if(user) {
-                let club = clubs[i];
-                let coachName = user.first_name; 
-                //globalData.push({club, coachName, members });
 
-                for(let j =0; j<members.length; j++){
-                  User.findOne({
-                    where: {
-                      id: members[j].id
-                    }
-                  })
-                  .then(user => {
-                    let photo = user.profile_photo;
-                    photoArray.push({photo})
-
-                    if(j == members.length-1) {
-                      console.log(photoArray);
-                      globalData.push({club, coachName, photoArray });
-                      photoArray=[];
-                    }
-                  })
-                }
-
-                if(i == clubs.length-1) {
-                  res.status(200).json(globalData);
-                  globalData=[];
-                }
-            }
-          })
-        })
-      }
-    }
-     
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving clubs."
-      });
-    });
-};
-
-exports.findAllWithMembers2 = async (req, res) => {
+exports.findAllWithMembers = async (req, res) => {
   try {
     const clubs = await Club.findAll({
       attributes:['id','name','ownerId',"sportId"]
@@ -285,21 +224,21 @@ exports.findAllWithMembers2 = async (req, res) => {
       }
     })
 
-    const users = await User.findAll({
-      where: {
-        id:   clubsOwners
-      }
-    })
+    const users = await User.findAll();
 
     let clubList = [];
     for(let i =0; i < clubs.length; i++) {
       let club = clubs[i];
-      let membrii = clubMembers.filter(membru => membru.clubId === club.id);
-        
       let coachName = users.find(owner => owner.id === club.ownerId);
       coachName = coachName.first_name;
-      
-      clubList.push({club, coachName,membrii});
+      let membrii = clubMembers.filter(membru => membru.clubId === club.id);
+      let photoArray =[];
+      for(let j = 0; j< membrii.length; j++) {
+        photo = users.find(user => user.id === membrii[j].userId);
+        photo = photo.profile_photo;
+        photoArray.push({photo: photo});
+      }
+      clubList.push({club, coachName, photoArray});
     }
     res.json(clubList);
   }

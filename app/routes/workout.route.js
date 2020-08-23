@@ -16,5 +16,8 @@ module.exports = app => {
 
     router.delete('/:workoutId',auth.authenticate(), workouts.validationRules('verifyWorkoutId'),workouts.validate,workouts.delete);
 
+
+    router.get('/search/:eventId',auth.authenticate(),workouts.findWorkoutsByEventId);
+
     app.use('/api/workout',router);
 };

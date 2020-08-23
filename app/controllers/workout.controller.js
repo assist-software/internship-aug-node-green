@@ -1,9 +1,11 @@
 const db = require('../models');
 
-const { body,param, validationResult } = require('express-validator');
+const { body, param, validationResult } = require('express-validator');
+const { fn, col } = db.sequelize;
 
 const Workout = db.Workout;
 const Event = db.Event;
+const User = db.User;
 
 //create
 
@@ -132,12 +134,44 @@ exports.delete = async (req, res) => {
 
 
 exports.search = async (req, res) => {
-    const acceptedFields = ['duration','heart_rate','calories','avg_speed','distance','workout_effectiveness','userId','eventId'];
+    const acceptedFields = ['duration', 'heart_rate', 'calories', 'avg_speed', 'distance', 'workout_effectiveness', 'userId', 'eventId'];
     const workouts = await Workout.findAll();
     const newWorkouts = workouts.filter(workout => {
         return Object.keys(req.body).filter(keyValue => acceptedFields.includes(keyValue)).every(key => workout[key] === req.body[key]);
     });
     res.status(200).json(newWorkouts);
+}
+
+// get workout by event id, include User and Event models
+exports.findWorkoutsByEventId = async (req, res) => {
+    try {
+
+        const list = await Workout.findAll({
+            where: {
+                eventId: req.params.eventId
+            },
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'first_name', 'last_name']
+                },
+                {
+                    model: Event,
+                    attributes: ['id', 'name', 'date', 'time', 'event_cover', 'description', 'location']
+                }
+            ],
+            attributes: ['heart_rate', 'calories', 'avg_speed', 'distance']
+        });
+        list.forEach(object => {
+            if (object.event.event_cover) {
+                object.event.event_cover = `${req.protocol}://${req.headers.host}/${object.event.event_cover}`;
+            }
+        });
+        res.status(200).json(list);
+    }
+    catch (err) {
+        res.status(500).send({ message: err.message });
+    }
 }
 
 

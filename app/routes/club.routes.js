@@ -12,7 +12,7 @@ module.exports= app => {
     router.delete("/:id",clubs.delete);
     //Custom
     router.get('/list/all', clubs.findAllWithMembers);
-    router.get('/list/all2', clubs.findAllWithMembers2);
+    
 
     app.use('/api/club',router); 
 }
