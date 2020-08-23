@@ -157,15 +157,10 @@ exports.findWorkoutsByEventId = async (req, res) => {
                 },
                 {
                     model: Event,
-                    attributes: ['id', 'name', 'date', 'time', 'event_cover', 'description', 'location']
+                    attributes: ['id', 'name', 'date', 'time', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover'], 'description', 'location']
                 }
             ],
             attributes: ['heart_rate', 'calories', 'avg_speed', 'distance']
-        });
-        list.forEach(object => {
-            if (object.event.event_cover) {
-                object.event.event_cover = `${req.protocol}://${req.headers.host}/${object.event.event_cover}`;
-            }
         });
         res.status(200).json(list);
     }

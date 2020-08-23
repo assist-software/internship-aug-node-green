@@ -41,7 +41,7 @@ exports.populateDb = async () => {
       weight: 75,
       age: 25,
       roleId: '1',
-      profile_photo: 'http://localhost:8080/images/name1'
+      profile_photo: 'images/no_image.jpg'
     });
 
     db.User.create({
@@ -54,7 +54,7 @@ exports.populateDb = async () => {
       weight: 75,
       age: 23,
       roleId: '1',
-      profile_photo: 'http://localhost:8080/images/name2'
+      profile_photo: 'images/no_image.jpg'
     });
 
     db.User.create({
@@ -69,7 +69,7 @@ exports.populateDb = async () => {
       roleId: '3',
       primarySportId: 1,
       secondarySportId: 2,
-      profile_photo: 'http://localhost:8080/images/name3'
+      profile_photo: 'images/no_image.jpg'
     });
 
 
@@ -83,7 +83,7 @@ exports.populateDb = async () => {
       weight: 75,
       age: 25,
       roleId: '2',
-      profile_photo: 'http://localhost:8080/images/name4'
+      profile_photo: 'images/no_image.jpg'
     });
 
     db.User.create({
@@ -96,7 +96,7 @@ exports.populateDb = async () => {
       weight: 75,
       age: 25,
       roleId: '3',
-      profile_photo: 'http://localhost:8080/images/name5'
+      profile_photo: 'images/no_image.jpg'
     });
 
     db.User.create({
@@ -107,7 +107,7 @@ exports.populateDb = async () => {
       gender: 'm',
       age: 25,
       roleId: '1',
-      profile_photo: 'http://localhost:8080/images/name6'
+      profile_photo: 'images/no_image.jpg'
     });
 
     db.User.create({
@@ -118,7 +118,7 @@ exports.populateDb = async () => {
       gender: 'm',
       age: 25,
       roleId: '2',
-      profile_photo: 'http://localhost:8080/images/name7'
+      profile_photo: 'images/no_image.jpg'
     });
 
     db.Club.create({
@@ -161,7 +161,7 @@ exports.populateDb = async () => {
       location: 'Suceava',
       radius: 10,
       sportId: 1,
-      event_cover: null
+      event_cover: 'images/event_cover_1598176327559.jpg'
     });
 
     db.Event.create({
@@ -173,7 +173,7 @@ exports.populateDb = async () => {
       location: 'Suceava',
       radius: 10,
       sportId: 3,
-      event_cover: null
+      event_cover: 'images/event_cover_1598177447621.jpg'
     });
 
     db.Event.create({
@@ -185,7 +185,7 @@ exports.populateDb = async () => {
       location: 'Suceava',
       radius: 10,
       sportId: 3,
-      event_cover: null
+      event_cover: 'images/no_image.jpg'
     });
 
     db.Workout.create({
@@ -225,24 +225,24 @@ exports.populateDb = async () => {
     });
 
     db.ClubRequest.create({
-        userId: 3,
-        clubId: 3
+      userId: 3,
+      clubId: 3
     });
-    
+
     db.ClubRequest.create({
       userId: 3,
       clubId: 4
-  });
+    });
 
-  db.EventMember.create({
+    db.EventMember.create({
       userId: 3,
       eventId: 1
-  });
+    });
 
-  db.EventRequest.create({
+    db.EventRequest.create({
       userId: 3,
       eventId: 2
-  });
+    });
 
   }
   catch (err) {
