@@ -32,7 +32,7 @@ exports.create = (req, res) => {
                     location: req.body.location,
                     radius: req.body.radius,
                     sportId: req.body.sportId,
-                    event_cover
+                    event_cover: event_cover
                 })
             })
                 .then(event => res.send({ message: "event created" }))
@@ -165,7 +165,9 @@ exports.findAllEventsByUserId = async (req, res) => {
                 attributes: ['id','name','date','location','sportId','event_cover']
             },
             attributes: ['eventId']
+        
         });
+
         const pending = await EventRequest.findAll({
             where: {
                 userId: id
@@ -258,7 +260,7 @@ exports.createValidator = () => {
                     }
                 })
         }),
-        body('date', 'Invalid date format').exists(),
+        body('date', 'Invalid date format'),//.exists().isString(),
         body('time').exists(),
         body('description', 'Invalid description').exists().isString(),
         body('location', 'Invalid location').exists().isString(),

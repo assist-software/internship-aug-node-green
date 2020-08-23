@@ -30,7 +30,7 @@ let createUserJohn = db.User.create({
     first_name: 'John',
     last_name: 'Andrew',
     email: 'johnandrew@andrew.com',
-    password: bcrypt.hashSync('12345', 10),
+    password: bcrypt.hashSync('123456789', 10),
     gender: 'm',
     height: 185,
     weight: 75,
@@ -50,6 +50,19 @@ let createUserIulian = db.User.create({
   roleId: '1'
 });
 
+let createUserBot = db.User.create({
+  first_name: 'Iulian Bot',
+  last_name: 'Iulian-Elisei',
+  email: 'iulianbot@bot.com',
+  password: bcrypt.hashSync('123456789', 10),
+  gender: 'Male',
+  height: 185,
+  weight: 75,
+  age: 23,
+  roleId: '3',
+  primarySportId: 1,
+  secondarySportId: 2
+});
 
 
 let createUserMike = db.User.create({
@@ -148,6 +161,17 @@ let createEventLiftUp = db.Event.create({
     event_cover: null
 });
 
+let createWorkout1 = db.Workout.create({
+  userId: 5,
+  eventId: 1,
+  duration: 1.30,
+  heart_rate: 80,
+  calories: 300,
+  avg_speed: 15,
+  distance: 10,
+  workout_effectiveness: 'Effective'
+});
+
 module.exports = [
     // Production hardcoded data
     createRoleAdministrator, 
@@ -158,6 +182,10 @@ module.exports = [
     createSportTeamsports,
     createSportWeightlifting,
     // Developement hardcoded data
+    createMember1,
+    createMember2,
+    createMember3,
+    createMember4,
     createUserJohn,
     createUserIulian,
     createUserMike,
@@ -166,8 +194,12 @@ module.exports = [
     createUserMory,
     createClubRunners,
     createClubTeamers,
-    createClubLifters,
+    createClubLifters ,
+    createClubRunnersv2,
+    createClubTeamersv2,
+    createClubLiftersv2,
     createEventMarathon,
     createEventTeamFest,
-    createEventLiftUp
+    createEventLiftUp,
+    createWorkout1
 ]

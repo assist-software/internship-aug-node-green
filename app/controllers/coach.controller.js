@@ -1,26 +1,43 @@
 const db=require("../models");
+const { ClubRequest } = require("../models");
+const { response } = require("express");
+const { get } = require("./user.controller");
 const Users = db.User;
+const Clubs = db.Club;
 const Op=db.Sequelize.Op;
 
-exports.get = (req, res) => {
-    Users.findAll({
-        where: {
-            roleId: 2
-        },
-        attributes: ['first_name', 'last_name', 'email', 'gender']
-    })
-    .then(coach => {
-        if(!coach) {
-            res.status(404).send({message: 'There are coach'});
+exports.get = async (req, res) => {
+    try {
+        const users = await Users.findAll({
+            where: {
+                roleId: 2
+            },
+            attributes: ['id', 'first_name', 'last_name', 'email']
+        })
+        const usersId = users.map(user => user.id);
+        
+        const clubs = await Clubs.findAll({
+            where: {
+                ownerId: usersId
+            }
+        })
+
+        let coachList = [];
+        for(let i=0; i<users.length; i++) {
+            let antrenor = users[i];
+            let cluburi = clubs.filter(club => club.ownerId === users[i].id).map(club => {
+                let name = club.name;
+                return {name}
+            })
+            coachList.push({antrenor, cluburi}); 
         }
-        else {
-            res.status(200).send(coach);
-        }
-    })
-    .catch(err => {
-        res.send({error: err.message});
-    })
+        res.json(coachList);
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 }
+
 
 exports.getById = (req, res) => {
     Users.findOne({
