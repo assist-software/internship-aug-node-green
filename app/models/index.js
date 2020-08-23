@@ -95,11 +95,11 @@ db.User.belongsTo(db.Role), {
 };
 
 db.User.belongsTo(db.Sport, {
-  as: 'primary_sport',
+  as: 'primarySport',
   allowNull: true
 });
 db.User.belongsTo(db.Sport, {
-  as: 'secondary_sport',
+  as: 'secondarySport',
   allowNull: true
 });
 

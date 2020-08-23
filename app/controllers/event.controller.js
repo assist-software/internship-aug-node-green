@@ -7,6 +7,7 @@ const EventMember = db.EventMember;
 const EventRequest = db.EventRequest;
 const ClubMember = db.ClubMember;
 const fs = require('fs');
+const { fn, col } = db.sequelize;
 
 const Op = db.Sequelize.Op;
 exports.create = (req, res) => {
@@ -21,7 +22,7 @@ exports.create = (req, res) => {
                 res.status(404).send({ message: "club not found" });
             }
             //set event_cover
-            const event_cover = (req.file) ? req.file.path : null;
+            const event_cover = (req.file) ? req.file.path : 'images/no_image.jpg';
             Events.sync().then(() => {
                 Events.create({
                     clubId: req.body.clubId,
@@ -107,13 +108,17 @@ exports.update = async (req, res) => {
         const event_cover = (req.file) ? req.file.path : null;
 
         if (event_cover !== null) {
-            if (event.event_cover) {
+            if (event.event_cover && !event.event_cover.includes('no_image')) {
                 fs.unlinkSync(event.event_cover);
             }
             event.event_cover = event_cover;
         }
         //update event
-        Object.keys(req.body).forEach(value => event[value] = req.body[value]);
+        Object.keys(req.body).forEach(value => {
+            if (value !== 'event_cover') {
+                event[value] = req.body[value];
+            }
+        });
         event.save();
         res.status(200).json();
 
@@ -136,7 +141,7 @@ exports.delete = (req, res) => {
             if (!event) {
                 res.status(404).send({ message: "Event ID not found" });
             }
-            if (event.event_cover) {
+            if (event.event_cover && event.event_cover !== 'images/no_image.jpg') {
                 fs.unlinkSync(event.event_cover);
             }
             Events.sync().then(() => {
@@ -162,7 +167,7 @@ exports.findAllEventsByUserId = async (req, res) => {
             },
             include: {
                 model: Events,
-                attributes: ['id','name','date','location','sportId','event_cover']
+                attributes: ['id', 'name', 'date', 'location', 'sportId', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover']]
             },
             attributes: ['eventId']
         
@@ -174,37 +179,17 @@ exports.findAllEventsByUserId = async (req, res) => {
             },
             include: {
                 model: Events,
-                attributes: ['id','name','date','location','sportId','event_cover']
+                attributes: ['id', 'name', 'date', 'location', 'sportId', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover']]
             },
             attributes: ['eventId']
         });
-        joined.forEach(object => {
-            if (object.event.event_cover) {
-                object.event.event_cover = `${req.protocol}://${req.headers.host}/${object.event.event_cover}`;
-            }
-        });
-        pending.forEach(object => {
-            if (object.event.event_cover) {
-                object.event.event_cover = `${req.protocol}://${req.headers.host}/${object.event.event_cover}`;
-            }
-        });
-
+      
         res.status(200).json({ joined, pending });
     }
     catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
-
-//verify if event have event_cover
-exports.verifyEventCover = async (eventId) => {
-    try{
-        const event = await Event.findOne()
-    }
-    catch(err){
-        return false;
-    }
-}
 
 //find all events by ClubId and UserId
 exports.findEventsByClub = async (req, res) => {
@@ -223,16 +208,9 @@ exports.findEventsByClub = async (req, res) => {
                     [Op.in]: intClubs
                 }
             },
-            attributes: {
-                exclude: ['createdAt', 'updatedAt', 'time', 'description', 'clubId', 'radius']
-            }
+            attributes: ['id', 'name', 'date', 'location', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover'], 'sportId']
         });
-        events.forEach(object => {
-            if (object.event.event_cover) {
-                object.event.event_cover = `${req.protocol}://${req.headers.host}/${object.event.event_cover}`;
-            }
-        });
-
+        
         res.status(200).json(events);
     }
     catch (err) {
