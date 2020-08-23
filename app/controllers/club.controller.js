@@ -1,10 +1,12 @@
 const db=require("../models");
 const Club=db.Club;
 const ClubMember=db.ClubMember;
+
 const Event=db.Event;
-const User=db.User;
+//const User=db.User;
 const { Op } = require("sequelize");
 const { body, validationResult  }  = require('express-validator');
+const { User } = require("../models");
 
 const clubMemberRoutes = require("../routes/club-member.routes");
 
@@ -198,7 +200,7 @@ exports.findAll = (req, res) => {
 
     Club.findAll({attributes:['id','name','ownerId',"sportId"]})
       .then(data => {
-        res.send(data);
+        res.status(200).send(data);
       })
       .catch(err => {
         res.status(500).send({
@@ -207,6 +209,43 @@ exports.findAll = (req, res) => {
         });
       });
 };
+
+
+exports.findAllWithMembers = async (req, res) => {
+  try {
+    const clubs = await Club.findAll({
+      attributes:['id','name','ownerId',"sportId"]
+    })
+    const clubsId = clubs.map(club => club.id);
+    const clubsOwners = clubs.map(club => club.ownerId);
+    const clubMembers = await ClubMember.findAll({
+      where:{
+        clubId: clubsId
+      }
+    })
+
+    const users = await User.findAll();
+
+    let clubList = [];
+    for(let i =0; i < clubs.length; i++) {
+      let club = clubs[i];
+      let coachName = users.find(owner => owner.id === club.ownerId);
+      coachName = coachName.first_name;
+      let membrii = clubMembers.filter(membru => membru.clubId === club.id);
+      let photoArray =[];
+      for(let j = 0; j< membrii.length; j++) {
+        photo = users.find(user => user.id === membrii[j].userId);
+        photo = photo.profile_photo;
+        photoArray.push({photo: photo});
+      }
+      clubList.push({club, coachName, photoArray});
+    }
+    res.json(clubList);
+  }
+  catch(err) {
+    res.status(500).json({ message: err.message });
+  }
+}
 
 exports.search = (req,res)=>{
 

@@ -1,13 +1,14 @@
 module.exports = app => {
     const auth = require('../config/passport.config')();
+    const roleAuth = require('../middlewares/authJwt');
     app.use(auth.initialize());
     const workouts = require('../controllers/workout.controller.js');
 
     const router = require('express').Router();
 
-    router.post('/create', auth.authenticate(), workouts.validationRules('create'),workouts.validate,workouts.create);
+    router.post('/create', auth.authenticate(), roleAuth.isAthlete, workouts.validationRules('create'),workouts.validate,workouts.create);
 
-    router.put('/:workoutId',auth.authenticate(), workouts.validationRules('update'),workouts.validate,workouts.update);
+    router.put('/:workoutId',auth.authenticate(),roleAuth.isAthlete, workouts.validationRules('update'),workouts.validate,workouts.update);
 
     router.get('/:workoutId',auth.authenticate(),workouts.validationRules('verifyWorkoutId'),workouts.validate, workouts.get);
 

@@ -7,6 +7,7 @@ const EventMember = db.EventMember;
 const EventRequest = db.EventRequest;
 const ClubMember = db.ClubMember;
 const fs = require('fs');
+const { fn, col } = db.sequelize;
 
 const Op = db.Sequelize.Op;
 exports.create = (req, res) => {
@@ -32,7 +33,7 @@ exports.create = (req, res) => {
                     location: req.body.location,
                     radius: req.body.radius,
                     sportId: req.body.sportId,
-                    event_cover
+                    event_cover: event_cover
                 })
             })
                 .then(event => res.send({ message: "event created" }))
@@ -166,47 +167,29 @@ exports.findAllEventsByUserId = async (req, res) => {
             },
             include: {
                 model: Events,
-                attributes: ['id', 'name', 'date', 'location', 'sportId', 'event_cover']
+                attributes: ['id', 'name', 'date', 'location', 'sportId', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover']]
             },
             attributes: ['eventId']
+        
         });
+
         const pending = await EventRequest.findAll({
             where: {
                 userId: id
             },
             include: {
                 model: Events,
-                attributes: ['id', 'name', 'date', 'location', 'sportId', 'event_cover']
+                attributes: ['id', 'name', 'date', 'location', 'sportId', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover']]
             },
             attributes: ['eventId']
         });
-        joined.forEach(object => {
-            if (object.event.event_cover) {
-                object.event.event_cover = `${req.protocol}://${req.headers.host}/${object.event.event_cover}`;
-            }
-        });
-        pending.forEach(object => {
-            if (object.event.event_cover) {
-                object.event.event_cover = `${req.protocol}://${req.headers.host}/${object.event.event_cover}`;
-            }
-        });
-
+      
         res.status(200).json({ joined, pending });
     }
     catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
-
-//verify if event have event_cover
-exports.verifyEventCover = async (eventId) => {
-    try {
-        const event = await Event.findOne()
-    }
-    catch (err) {
-        return false;
-    }
-}
 
 //find all events by ClubId and UserId
 exports.findEventsByClub = async (req, res) => {
@@ -225,16 +208,9 @@ exports.findEventsByClub = async (req, res) => {
                     [Op.in]: intClubs
                 }
             },
-            attributes: {
-                exclude: ['createdAt', 'updatedAt', 'time', 'description', 'clubId', 'radius']
-            }
+            attributes: ['id', 'name', 'date', 'location', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover'], 'sportId']
         });
-        events.forEach(object => {
-            if (object.event.event_cover) {
-                object.event.event_cover = `${req.protocol}://${req.headers.host}/${object.event.event_cover}`;
-            }
-        });
-
+        
         res.status(200).json(events);
     }
     catch (err) {
@@ -262,7 +238,7 @@ exports.createValidator = () => {
                     }
                 })
         }),
-        body('date', 'Invalid date format').exists(),
+        body('date', 'Invalid date format'),//.exists().isString(),
         body('time').exists(),
         body('description', 'Invalid description').exists().isString(),
         body('location', 'Invalid location').exists().isString(),
