@@ -35,7 +35,8 @@ let createUserJohn = db.User.create({
     height: 185,
     weight: 75,
     age: 25,
-    roleId: '1'
+    roleId: '1',
+    profile_photo: 'images/no_image.jpg'
 });
 
 let createUserIulian = db.User.create({
@@ -47,7 +48,8 @@ let createUserIulian = db.User.create({
   height: 185,
   weight: 75,
   age: 23,
-  roleId: '1'
+  roleId: '1',
+  profile_photo: 'images/no_image.jpg'
 });
 
 
@@ -61,7 +63,8 @@ let createUserMike = db.User.create({
     height: 185,
     weight: 75,
     age: 25,
-    roleId: '2'
+    roleId: '2',
+    profile_photo: 'images/no_image.jpg'
 });
 
 let createUserSarah = db.User.create({
@@ -73,7 +76,8 @@ let createUserSarah = db.User.create({
     height: 185,
     weight: 75,
     age: 25,
-    roleId: '3'
+    roleId: '3',
+    profile_photo: 'images/no_image.jpg'
 });
 
 let createUserValentin = db.User.create({
@@ -83,7 +87,8 @@ let createUserValentin = db.User.create({
   password: bcrypt.hashSync('12345', 10),
   gender: 'm',
   age: 25,
-  roleId: '1'
+  roleId: '1',
+  profile_photo: 'images/no_image.jpg'
 });
 
 let createUserMory = db.User.create({
@@ -93,7 +98,8 @@ let createUserMory = db.User.create({
   password: bcrypt.hashSync('12345', 10),
   gender: 'm',
   age: 25,
-  roleId: '2'
+  roleId: '2',
+  profile_photo: 'images/no_image.jpg'
 });
 
 let createClubRunners = db.Club.create({
@@ -121,7 +127,7 @@ let createEventMarathon = db.Event.create({
     location: 'Suceava',
     radius: 10,
     sportId: 1,
-    event_cover: null
+    event_cover: 'images/no_image.jpg'
 });
 
 let createEventTeamFest = db.Event.create({
@@ -133,7 +139,7 @@ let createEventTeamFest = db.Event.create({
     location: 'Suceava',
     radius: 10,
     sportId: 2,
-    event_cover: null
+    event_cover: 'images/no_image.jpg'
 });
 
 let createEventLiftUp = db.Event.create({
@@ -145,7 +151,7 @@ let createEventLiftUp = db.Event.create({
     location: 'Suceava',
     radius: 10,
     sportId: 3,
-    event_cover: null
+    event_cover: 'images/no_image.jpg'
 });
 
 module.exports = [

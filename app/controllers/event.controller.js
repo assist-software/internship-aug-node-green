@@ -21,7 +21,7 @@ exports.create = (req, res) => {
                 res.status(404).send({ message: "club not found" });
             }
             //set event_cover
-            const event_cover = (req.file) ? req.file.path : null;
+            const event_cover = (req.file) ? req.file.path : 'images/no_image.jpg';
             Events.sync().then(() => {
                 Events.create({
                     clubId: req.body.clubId,
@@ -107,13 +107,17 @@ exports.update = async (req, res) => {
         const event_cover = (req.file) ? req.file.path : null;
 
         if (event_cover !== null) {
-            if (event.event_cover) {
+            if (event.event_cover && !event.event_cover.includes('no_image')) {
                 fs.unlinkSync(event.event_cover);
             }
             event.event_cover = event_cover;
         }
         //update event
-        Object.keys(req.body).forEach(value => event[value] = req.body[value]);
+        Object.keys(req.body).forEach(value => {
+            if (value !== 'event_cover') {
+                event[value] = req.body[value];
+            }
+        });
         event.save();
         res.status(200).json();
 
@@ -136,7 +140,7 @@ exports.delete = (req, res) => {
             if (!event) {
                 res.status(404).send({ message: "Event ID not found" });
             }
-            if (event.event_cover) {
+            if (event.event_cover && event.event_cover !== 'images/no_image.jpg') {
                 fs.unlinkSync(event.event_cover);
             }
             Events.sync().then(() => {
@@ -162,7 +166,7 @@ exports.findAllEventsByUserId = async (req, res) => {
             },
             include: {
                 model: Events,
-                attributes: ['id','name','date','location','sportId','event_cover']
+                attributes: ['id', 'name', 'date', 'location', 'sportId', 'event_cover']
             },
             attributes: ['eventId']
         });
@@ -172,7 +176,7 @@ exports.findAllEventsByUserId = async (req, res) => {
             },
             include: {
                 model: Events,
-                attributes: ['id','name','date','location','sportId','event_cover']
+                attributes: ['id', 'name', 'date', 'location', 'sportId', 'event_cover']
             },
             attributes: ['eventId']
         });
@@ -196,10 +200,10 @@ exports.findAllEventsByUserId = async (req, res) => {
 
 //verify if event have event_cover
 exports.verifyEventCover = async (eventId) => {
-    try{
+    try {
         const event = await Event.findOne()
     }
-    catch(err){
+    catch (err) {
         return false;
     }
 }
