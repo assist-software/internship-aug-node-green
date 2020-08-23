@@ -10,6 +10,7 @@ module.exports = app => {
     router.put('/api/coach/:coachId',auth.authenticate() ,coach.setId ,user.validationRules('update'),user.validate, user.update);
     router.get('/api/coach/:coachId',auth.authenticate(), coach.getById);
     router.get('/api/coach', coach.get);
+    router.get('/api/coachPag', coach.getPagination);
     router.delete('/api/coach/:coachId', auth.authenticate() ,coach.setId, user.delete );
     
     app.use(router);

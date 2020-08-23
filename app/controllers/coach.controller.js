@@ -38,6 +38,28 @@ exports.get = async (req, res) => {
     }
 }
 
+exports.getPagination = async (req, res) => {
+    try {
+
+        let offset = req.query.offset;
+        let limit = req.query.limit;
+
+        const users = await Users.findAndCountAll({
+            where: {
+                roleId: 2
+            },
+            attributes: ['id', 'first_name', 'last_name', 'email'],
+            offset: offset,
+            limit: limit
+        })
+
+        res.json(users);
+    }
+    catch(err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
 
 exports.getById = (req, res) => {
     Users.findOne({
