@@ -165,6 +165,17 @@ exports.update = async (req, res) => {
   
 }
 
+exports.findAllWithoutCoach = (req,res)=>{
+  Club.findAll({where:{
+    ownerId:null
+  }})
+  .then(data=>{
+    res.send(data)
+  })
+  .catch(err=>{
+    res.status(404).send({message:"Error retrieving clubs"})
+  })
+}
 
 exports.findOne = (req, res) => {
 
