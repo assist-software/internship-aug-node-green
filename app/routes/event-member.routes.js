@@ -4,16 +4,18 @@ module.exports = app => {
 
     const events = require('../controllers/event-member.controller.js');
 
+    const utils = require('../utils/validate.utils.js');
+
     const router = require('express').Router();
 
     //create a new member 
-    router.post('/create',auth.authenticate(),events.validationRules('create'),events.validate,events.create);
+    router.post('/create',auth.authenticate(),events.validationRules('create'),utils.validate,events.create);
 
     //get a list of users by eventId
-    router.get('/:eventId',events.validationRules('get'),events.validate,events.list);
+    router.get('/:eventId',events.validationRules('get'),utils.validate,events.list);
     
     //delete a member by inviteId
-    router.delete('/remove/:memberId',events.validationRules('delete'),events.validate,events.remove);
+    router.delete('/remove/:memberId',events.validationRules('delete'),utils.validate,events.remove);
 
     // check if user is member
     router.get('/membership/:userId',auth.authenticate(),events.isMemberAnyEvent);

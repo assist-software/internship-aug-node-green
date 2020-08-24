@@ -86,21 +86,21 @@ exports.update = async (req, res) => {
     }
 };
 
-//get workout by id
+//get workout by userId
 exports.get = async (req, res) => {
     try {
         const id = req.params.workoutId;
-        const workout = await Workout.findOne({
+        const workouts = await Workout.findAll({
             where: {
-                id: id
-            }
+                userId: id
+            },
+            include: {
+                model: Event,
+                attributes: ['date']
+            },
+            attributes: ['duration','heart_rate','calories','distance']
         });
-        if (workout) {
-            res.status(200).json(workout);
-        }
-        else {
-            res.status(404).json();
-        }
+        res.status(200).json(workouts);
     }
     catch (err) {
         res.status(500).send({ message: err.message });
