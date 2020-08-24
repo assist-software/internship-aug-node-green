@@ -215,8 +215,23 @@ exports.populateDb = async () => {
     });
 
     db.ClubMember.create({
+      userId: 3,
+      clubId: 1
+    });
+
+    db.ClubMember.create({
       userId: 4,
       clubId: 2
+    });
+
+    db.ClubMember.create({
+      userId: 4,
+      clubId: 1
+    });
+
+    db.ClubMember.create({
+      userId: 5,
+      clubId: 1
     });
 
     db.ClubMember.create({
