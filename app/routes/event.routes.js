@@ -18,13 +18,15 @@ module.exports = app => {
     Router.put('/:eventId', auth.authenticate(),upload.single('event_cover'), event.updateValidator(), event.validate, event.update);
     Router.delete('/:eventId', auth.authenticate(), event.delete);
 
-    //get all events related to an user
+    //get all events related to an user --  mobile
     Router.get('/events/:userId',auth.authenticate(),event.findAllEventsByUserId);
 
-    //get all event related to a club
+    //get all event related to a club -- mobile
     Router.get('/eventsByClub/:userId',auth.authenticate(), event.findEventsByClub);
 
-    //get all events with all their members
+    //get all events with all their members -- front
     Router.get('/allEvents/list',auth.authenticate(),event.findAllEventsWithMembers);
     app.use('/api/event', Router);
 };
+
+//nume, prenume

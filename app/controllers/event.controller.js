@@ -87,7 +87,7 @@ exports.get = (req, res) => {
             res.status(200).send(event);
         })
         .catch(err => res.send({ err: err.message }));
-}
+};
 
 exports.update = async (req, res) => {
     try {

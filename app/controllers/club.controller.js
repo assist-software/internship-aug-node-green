@@ -287,7 +287,7 @@ exports.findAllWithMembers = async (req, res) => {
     for (let i = 0; i < clubs.length; i++) {
       let club = clubs[i];
       let coachName = users.find(owner => owner.id === club.ownerId);
-      coachName = coachName.first_name;
+      coachName = coachName ? coachName.first_name : '';
       let membrii = clubMembers.filter(membru => membru.clubId === club.id);
       let photoArray = [];
       for (let j = 0; j < membrii.length; j++) {

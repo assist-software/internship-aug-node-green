@@ -142,7 +142,7 @@ exports.search = async (req, res) => {
     res.status(200).json(newWorkouts);
 }
 
-// get workout by event id, include User and Event models
+// get workout by event id, include User and Event models (mobile)
 exports.findWorkoutsByEventId = async (req, res) => {
     try {
         const event = await Event.findOne({
@@ -168,7 +168,37 @@ exports.findWorkoutsByEventId = async (req, res) => {
     catch (err) {
         res.status(500).send({ message: err.message });
     }
-}
+};
+
+exports.findWorkoutsByEventIdFront = async (req, res) => {
+    try {
+        const event = await Event.findOne({
+            where: {
+                id: req.params.eventId
+            },
+            attributes: ['id', 'name', 'date', 'time', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover'], 'description', 'location']
+        });
+        const list = await Workout.findAll({
+            where: {
+                eventId: req.params.eventId
+            },
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'first_name', 'last_name','gender','age',[fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('profile_photo')),'profile_photo']]
+                }
+            ],
+            attributes: ['heart_rate', 'calories', 'avg_speed', 'distance']
+        });
+        res.status(200).json({ event, eventMembers: list});
+    }
+    catch (err) {
+        res.status(500).send({ message: err.message });
+    }
+};
+
+
+
 
 
 exports.validationRules = method => {
