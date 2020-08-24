@@ -5,6 +5,7 @@ module.exports= app => {
     router.post("/create",clubmembers.validate(),clubmembers.create);
     router.get("/:id",clubmembers.list);
     router.get("/status/:userId",clubmembers.sendStatus);
+    router.get("/isMember/:userId",clubmembers.isMember)
     router.delete("/remove/:id",clubmembers.remove);
 
     app.use('/api/club/member',router);
