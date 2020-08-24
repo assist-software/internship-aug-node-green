@@ -46,8 +46,8 @@ db.sequelize.sync({ force: true })
    }
 }); 
 */
-/*
-const hardocodedData = require('./app/config/db.hardcodeData2');
+
+/**const hardocodedData = require('./app/config/db.hardcodeData2');
 db.sequelize.sync({force: true}).then(() => {
   hardocodedData.populateDb();
 }); */

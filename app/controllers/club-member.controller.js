@@ -156,6 +156,32 @@ exports.sendStatus=(req,res)=>{
   }) 
 }
 
+exports.isMember = (req,res) => {
+  const id=req.params.userId;
+  let is={
+    member:[]
+  };
+  ClubMember.findOne({where:{userId:id}})
+  .then(value=>{
+    if(value)
+    {
+      is.member=true
+      res.status(200).send(is);
+    }
+    else{
+      is.member=false
+      res.status(200).send(is);
+    }
+  })
+  .catch(err => {
+    res.status(500).send({
+      message:
+        err.message || "Some error occurred while retrieving club members."
+    });
+  });
+  
+}
+
 exports.validate = () => {
     
     return [
