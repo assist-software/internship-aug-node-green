@@ -147,15 +147,12 @@ exports.update = async (req, res) => {
           });
           email(`You were invited to club ${club.name}`, [users[i].email]);
         }else{
-          
           usedEmails.push(users[i].email)
-          console.log("usedEmails")
         }
       }
       for(let i=0;i<emailArray.length;i++){
         let mail=emailArray[i]
         if(usersEmail.indexOf(mail)==-1){
-          console.log("badEmails")
           badEmails.push(mail)
         }
       }
@@ -307,7 +304,6 @@ exports.search = (req, res) => {
 
   const ownerId = req.body.ownerId;
   const name = req.body.name;
-  const sportId = req.body.sportId;
   if (ownerId && name) {
     Club.findAll({
       where: {
