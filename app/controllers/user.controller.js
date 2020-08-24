@@ -240,8 +240,8 @@ exports.validationRules = method => {
         case 'create': {
             return [
                 body(['first_name', 'last_name', 'gender']).optional().isString(),
-                body('email').exists().notEmpty().isEmail(),
-                body('password', 'invalid password').exists().isString().notEmpty().custom((value, { req }) => {
+                body('email').exists().bail().isEmail(),
+                body('password', 'invalid password').exists().bail().isString().bail().notEmpty().bail().custom((value, { req }) => {
                     if (value !== req.body.confirm_password) {
                         throw new Error('Password confirmation does not match password');
                     }
@@ -295,7 +295,8 @@ exports.validate = (req, res, next) => {
         if (req.file) {
             fs.unlinkSync(req.file.path);
         }
-        res.status(422).json({ errors: errors.array() });
+        const err = errors.array().map(object => {return  {msg: `${object.param}: ${object.msg}`}});
+        res.status(422).json({ errors: err});
         return;
     }
     else {

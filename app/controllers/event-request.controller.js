@@ -145,7 +145,7 @@ exports.validationRules = method => {
     switch (method) {
         case 'create': {
             return [
-                body(['userId', 'eventId']).exists().isInt()
+                body(['userId', 'eventId']).exists().bail().isInt().bail()
             ]
             break;
         }
@@ -170,7 +170,8 @@ exports.validate = (req, res, next) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        res.status(422).json({ errors: errors.array() });
+        const err = errors.array().map(object => {return  {msg: `${object.param}: ${object.msg}`}});
+        res.status(422).json({ errors: err});
         return;
     }
     next();
