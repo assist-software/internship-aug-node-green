@@ -21,5 +21,7 @@ module.exports = app => {
 
     router.get('/search/:eventId',auth.authenticate(),workouts.findWorkoutsByEventId);
 
+    router.get('/searchEventAndMembers/:eventId',auth.authenticate(),workouts.findWorkoutsByEventIdFront);
+
     app.use('/api/workout',router);
 };

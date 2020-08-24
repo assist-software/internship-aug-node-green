@@ -1,6 +1,7 @@
 const db = require('../models');
 
 const { body, param, validationResult } = require('express-validator');
+const { EventMember } = require('../models');
 const { fn, col } = db.sequelize;
 
 const Workout = db.Workout;
@@ -142,7 +143,7 @@ exports.search = async (req, res) => {
     res.status(200).json(newWorkouts);
 }
 
-// get workout by event id, include User and Event models
+// get workout by event id, include User and Event models (mobile)
 exports.findWorkoutsByEventId = async (req, res) => {
     try {
         const event = await Event.findOne({
@@ -168,7 +169,48 @@ exports.findWorkoutsByEventId = async (req, res) => {
     catch (err) {
         res.status(500).send({ message: err.message });
     }
-}
+};
+
+exports.findWorkoutsByEventIdFront = async (req, res) => {
+    try {
+        const eventMembers = [];
+        const event = await Event.findOne({
+            where: {
+                id: req.params.eventId
+            },
+            attributes: ['id', 'name', 'date', 'time', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover'], 'description', 'location']
+        });
+        const list = await Workout.findAll({
+            where: {
+                eventId: req.params.eventId
+            },
+            attributes: ['heart_rate', 'calories', 'avg_speed', 'distance']
+        });
+        const members = await EventMember.findAll({
+            where: {
+                eventId: req.params.eventId
+            },
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'first_name', 'last_name','gender','age',[fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('profile_photo')),'profile_photo']]
+                }
+            ]
+        });
+        members.forEach(member => {
+            nou = list.find(workout => workout.userId === member.user.id);
+            nou = nou ? nou : {};
+            eventMembers.push({user: member.user,workout: nou});
+        });
+        res.status(200).json({ event, eventMembers});
+    }
+    catch (err) {
+        res.status(500).send({ message: err.message });
+    }
+};
+
+
+
 
 
 exports.validationRules = method => {
