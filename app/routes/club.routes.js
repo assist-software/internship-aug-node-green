@@ -10,8 +10,5 @@ module.exports= app => {
     router.get("/details/:clubId",clubs.findDetails);
     router.post("/search",clubs.validateSearch(),clubs.search);
     router.delete("/:id",clubs.delete);
-    //Custom
-    router.get('/list/all', clubs.findAllWithMembers);
-
     app.use('/api/club',router); 
 }
