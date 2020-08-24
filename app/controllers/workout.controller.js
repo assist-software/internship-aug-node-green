@@ -1,6 +1,7 @@
 const db = require('../models');
 
 const { body, param, validationResult } = require('express-validator');
+const { EventMember } = require('../models');
 const { fn, col } = db.sequelize;
 
 const Workout = db.Workout;
@@ -172,6 +173,7 @@ exports.findWorkoutsByEventId = async (req, res) => {
 
 exports.findWorkoutsByEventIdFront = async (req, res) => {
     try {
+        const eventMembers = [];
         const event = await Event.findOne({
             where: {
                 id: req.params.eventId
@@ -182,15 +184,24 @@ exports.findWorkoutsByEventIdFront = async (req, res) => {
             where: {
                 eventId: req.params.eventId
             },
+            attributes: ['heart_rate', 'calories', 'avg_speed', 'distance']
+        });
+        const members = EventMember.findAll({
+            where: {
+                eventId: req.params.eventId
+            },
             include: [
                 {
                     model: User,
                     attributes: ['id', 'first_name', 'last_name','gender','age',[fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('profile_photo')),'profile_photo']]
                 }
-            ],
-            attributes: ['heart_rate', 'calories', 'avg_speed', 'distance']
+            ]
         });
-        res.status(200).json({ event, eventMembers: list});
+        members.forEach(member => {
+            nou = list.filter(workout => workout.userId === member.user.id);
+            eventMembers.push({user: member.user,workout: nou});
+        });
+        res.status(200).json({ event, eventMembers});
     }
     catch (err) {
         res.status(500).send({ message: err.message });
