@@ -14,10 +14,13 @@ module.exports = app => {
 
     router.put('/:userId'/*auth.authenticate()*/,upload.single('profile_photo'),users.validationRules('update'),users.validate,users.update);
 
+    router.get('/athlete/list',auth.authenticate(),users.findAllAthletes);
+
     router.get('/:userId',auth.authenticate(),users.validationRules('verifyUserId'),users.validate, users.get);
 
     router.delete('/:userId',auth.authenticate(),users.validationRules('verifyUserId'),users.validate, users.delete);
 
+    
 
     app.use('/api/user',router);
 };

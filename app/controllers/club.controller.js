@@ -71,7 +71,6 @@ exports.createTest = async (req, res) => {
       club: club
     });
   }
-  console.log('Club Found');
 
   const newClub = {
     name: req.body.name,
@@ -79,28 +78,28 @@ exports.createTest = async (req, res) => {
     sportId: req.body.sportId
   }
   
-  Club.create(newClub);
-  console.log('Club Created');
+  await Club.create(newClub);
   const createdClubId = await Club.findOne({
     where: {
       name: req.body.name
     },
-    attributes: ['id']
+    attributes: ['id', 'name']
   });
-  console.log('Club ID Found');
   
   let emailArray = req.body.emailArray;
 
   const users = await User.findAll({where: {email: emailArray}});
 
-  console.log('');
+  console.log('Users found');
   for(let i =0; i < users.length; i++) {
-    ClubMember.create({
+    await ClubMember.create({
       userId: users[i].id,
-      clubId: createClubId
-    })
+      clubId: createdClubId.id
+    });
   }
 
+  email(`You were invited to club ${createdClubId.name}`  ,emailArray);
+ 
   res.send({message: 'Succes'});
 }
 

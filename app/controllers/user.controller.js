@@ -3,6 +3,8 @@ const { body, param, validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
 const User = db.User;
+const Sport = db.Sport;
+const {fn,col} =db.sequelize;
 //create User method
 exports.create = async (req, res) => {
     try {
@@ -197,6 +199,38 @@ exports.search = async (req, res) => {
 
     }
     catch (err) {
+        res.status(500).send({ message: err.message });
+    }
+};
+
+exports.findAllAthletes = async (req, res) => {
+    try {
+        const data = await User.findAll({
+            where: {
+                roleId: 3
+            },
+            include: [
+                {
+                    //required: true,
+                    model: Sport,
+                    as: 'primarySport',
+                    attributes: ['type']
+                },
+                {
+                    //required: true,
+                    model: Sport,
+                    as: 'secondarySport',
+                    attributes: ['type']
+                }
+                
+
+            ],
+            
+            attributes: ['first_name','last_name','gender','age',[fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('profile_photo')),'profile_photo']]
+        });
+        res.status(200).json(data);
+    }
+    catch(err) {
         res.status(500).send({ message: err.message });
     }
 };
