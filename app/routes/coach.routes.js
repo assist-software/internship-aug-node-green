@@ -14,5 +14,10 @@ module.exports = app => {
 
     router.delete('/delete/list',coach.deleteListOfCoaches);
     
+    
+    //localhost:8080/api/coachPag?page=1&limit=1
+    router.get('/api/coachPage', coach.getPagination);
+
+    app.use(router);
     app.use('/api/coach',router);
 };
