@@ -10,7 +10,7 @@ module.exports= app => {
     router.get("/details/:clubId",clubs.findDetails);
     router.post("/search",clubs.validateSearch(),clubs.search);
     router.delete("/:id",clubs.delete);
-
+    router.get("/findAll/noCoach",clubs.findAllWithoutCoach);
     router.post("/createTest",clubs.validate(),clubs.createTest);
 
     router.get('/list/all', clubs.findAllWithMembers);
