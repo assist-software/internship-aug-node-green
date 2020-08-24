@@ -27,7 +27,7 @@ exports.create = async (req, res) => {
         if (!req.body.roleId) {
             req.body.roleId = 3;
         }
-        const profile_photo = (req.file) ? req.file.path : null;
+        const profile_photo = (req.file) ? req.file.path : 'images/no_image.jpg';
         //set profile photo
         const hashedPassword = bcrypt.hashSync(password, 10);
         User.create({
@@ -77,8 +77,8 @@ exports.update = async (req, res) => {
         //verify profile_photo
         const profile_photo = (req.file) ? req.file.path : null;
 
-        if (profile_photo !== null && profile_photo !== user.profile_photo) {
-            if (user.profile_photo) {
+        if (profile_photo !== null) {
+            if (user.profile_photo && !user.profile_photo.includes('no_image')) {
                 fs.unlinkSync(user.profile_photo);
             }
             user.profile_photo = profile_photo;
@@ -97,6 +97,7 @@ exports.update = async (req, res) => {
                         fs.unlinkSync(req.file.path);
                     }
                     res.status(409).json({ message: 'Email already exists!!' });
+                    return;
                 }
             }
         }
@@ -105,7 +106,11 @@ exports.update = async (req, res) => {
             req.body.password = bcrypt.hashSync(req.body.password, 10);
         }
         //update user
-        Object.keys(req.body).forEach(value => user[value] = req.body[value]);
+        Object.keys(req.body).forEach(value => {
+            if (value !== 'profile_photo') {
+                user[value] = req.body[value];
+            }
+        });
         user.save();
         res.status(200).json();
     }
@@ -163,7 +168,7 @@ exports.delete = async (req, res) => {
         });
         if (user) {
             //delete user
-            if (user.profile_photo) {
+            if (user.profile_photo && !user.profile_photo.includes('no_image')) {
                 fs.unlinkSync(user.profile_photo);
             }
             user.destroy();

@@ -4,6 +4,8 @@ module.exports = app => {
     const authJwt = require('../middlewares/authJwt');
     const event = require('../controllers/event.controller');
     const auth = require('../config/passport.config')();
+    const jwtRoles = require('../middlewares/authJwt');
+
     const upload = require('../middlewares/upload.js');
 
     app.use(auth.initialize());
@@ -11,6 +13,7 @@ module.exports = app => {
     const Clubs = db.Club;
     Router.post('/create', auth.authenticate(),upload.single('event_cover'), event.createValidator(), event.validate, event.create);
     Router.post('/search', auth.authenticate(), event.search);
+    
     Router.get('/:eventId', auth.authenticate(), event.get);
     Router.put('/:eventId', auth.authenticate(),upload.single('event_cover'), event.updateValidator(), event.validate, event.update);
     Router.delete('/:eventId', auth.authenticate(), event.delete);
@@ -19,6 +22,6 @@ module.exports = app => {
     Router.get('/events/:userId',auth.authenticate(),event.findAllEventsByUserId);
 
     //get all event related to a club
-    Router.get('/eventsByClub/:userId',auth.authenticate(),event.findEventsByClub);
+    Router.get('/eventsByClub/:userId',auth.authenticate(), event.findEventsByClub);
     app.use('/api/event', Router);
 };

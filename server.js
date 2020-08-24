@@ -8,6 +8,7 @@ const {authJwt} = require('./app/middlewares/authJwt');
 const validator = require('express-validator');
 
 
+
 // API Routes
 //const authRoutes = require('./app/routes/auth.routes');
 //const eventRoutes = require('./app/routes/event.routes');
@@ -20,7 +21,7 @@ const app = express();
 
 
 const corsOptions = {
-  origin: "http://localhost:8081"
+  origin: false
 };
 
 app.use(cors(corsOptions));
@@ -43,15 +44,24 @@ db.sequelize.sync({ force: true })
       let data = hardcodedData[i];
       data();
    }
-});
+}); 
 */
+/*
+const hardocodedData = require('./app/config/db.hardcodeData2');
+db.sequelize.sync({force: true}).then(() => {
+  hardocodedData.populateDb();
+}); */
+//hardocodedData.populateDb();
 db.sequelize.sync();
 
-/* file upload middleware
-const fileUpload = require('express-fileupload');
-app.use(fileUpload());
-app.use('/images', express.static('images'));
-*/
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  //res.header("Access-Control-Allow-Methods", "*");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  next();
+});
 
 app.get("/", (req, res) => { res.json({ message: "Hello world!" });});
 // API Routes
@@ -59,15 +69,10 @@ require('./app/routes/auth.routes')(app);
 require('./app/routes/event.routes')(app);
 require('./app/routes/club-request.routes')(app);
 require('./app/routes/user.route.js')(app);
-
 require('./app/routes/workout.route.js')(app);
-
 require('./app/routes/club.routes.js')(app);
-
 require('./app/routes/club-invite.routes.js')(app);
-
 require('./app/routes/club-member.routes.js')(app);
-
 require('./app/routes/event-member.routes.js')(app);
 require('./app/routes/event-request.routes.js')(app);
 require('./app/routes/event-invite.routes.js')(app);

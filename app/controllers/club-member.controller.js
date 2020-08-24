@@ -93,7 +93,7 @@ exports.sendStatus=(req,res)=>{
   var response={
     joined:[],
     pending:[],
-    new:[]
+    newClubs:[]
   }
   ClubMember.findAll({where:{userId:userId}})
   .then(data=>{
@@ -143,7 +143,7 @@ exports.sendStatus=(req,res)=>{
           }})
           .then(data=>{
             if(data){
-              response.new=data
+              response.newClubs=data
         
             }
             res.status(200).send(response)

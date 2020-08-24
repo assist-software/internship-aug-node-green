@@ -55,15 +55,17 @@ db.ClubRequest.belongsTo(db.Club);
 
 //event assosiations
 db.EventInvite.belongsTo(db.Event);
-db.EventRequest.belongsTo(db.Event);
+db.EventRequest.belongsTo(db.Event, {constraints: false});
 db.EventRequest.belongsTo(db.User,{allowNull: false});
-db.Event.belongsTo(db.Sport, {allowNull: false});
-db.Event.belongsTo(db.Club);
+db.Event.belongsTo(db.Sport, {allowNull: false, constraints: false});
+db.Event.belongsTo(db.Club,  {constraints: false});
 db.EventMember.belongsTo(db.User,{allowNull: false});
 db.EventMember.belongsTo(db.Event,{allowNull: false});
 
 //club assosiations
-db.Club.belongsTo(db.User,{as:'owner'});
+db.Club.belongsTo(db.User,{as:'owner', constraints: false});
+//db.User.hasMany(db.Club);
+//------
 db.Club.belongsTo(db.Sport,{
   allowNull:false
 })
@@ -85,29 +87,28 @@ db.ClubMember.belongsTo(db.User),{
 db.ClubMember.belongsTo(db.Club,{
   allowNull:false
 });
-
 // User assosiations
+
 console.log(db.Sport);
 db.User.belongsTo(db.Role), {
   allowNull: false
 };
 
 db.User.belongsTo(db.Sport, {
-  as: 'primary_sport',
+  as: 'primarySport',
   allowNull: true
 });
 db.User.belongsTo(db.Sport, {
-  as: 'secondary_sport',
+  as: 'secondarySport',
   allowNull: true
 });
 
 //Workout assosiations
 db.Workout.belongsTo(db.User, {
-  as: 'user',
   allowNull: false
 })
 db.Workout.belongsTo(db.Event, {
-  as: 'event',
+  
   allowNull: false
 })
 
