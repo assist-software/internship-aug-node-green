@@ -41,10 +41,11 @@ exports.get = async (req, res) => {
 exports.getPagination = async (req, res) => {
     try {
 
-        let offset = req.query.offset;
+        let page = req.query.page;
         let limit = req.query.limit;
+        let offset = (page-1)*limit;
 
-        const users = await Users.findAndCountAll({
+        const coaches = await Users.findAndCountAll({
             where: {
                 roleId: 2
             },
@@ -52,8 +53,23 @@ exports.getPagination = async (req, res) => {
             offset: offset,
             limit: limit
         })
-
-        res.json(users);
+        const users = coaches.rows;
+        const usersId = users.map(user => user.id);
+        const clubs = await Clubs.findAll({
+            where: {
+                ownerId: usersId
+            }
+        })
+        let coachList = [];
+        for(let i=0; i<users.length; i++) {
+            let antrenor = users[i];
+            let cluburi = clubs.filter(club => club.ownerId === users[i].id).map(club => {
+                let name = club.name;
+                return {name}
+            })
+            coachList.push({antrenor, cluburi}); 
+        }
+        res.json(coachList);
     }
     catch(err) {
         res.status(500).json({ message: err.message });

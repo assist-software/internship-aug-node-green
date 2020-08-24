@@ -235,7 +235,8 @@ exports.findAllWithMembers = async (req, res) => {
       let photoArray =[];
       for(let j = 0; j< membrii.length; j++) {
         photo = users.find(user => user.id === membrii[j].userId);
-        photo = photo.profile_photo;
+        //photo = photo.profile_photo;
+        photo = `${req.protocol}://${req.headers.host}/${photo.profile_photo}`;
         photoArray.push({photo: photo});
       }
       clubList.push({club, coachName, photoArray});

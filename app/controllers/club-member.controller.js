@@ -71,7 +71,7 @@ exports.remove=(req,res)=>{
           });
         });
 }
-
+/*
 exports.list=(req,res)=>{
     const id=req.params.id;
     ClubMember.findAll({where:{clubId:id}})
@@ -85,6 +85,43 @@ exports.list=(req,res)=>{
         });
       });
 }
+*/
+exports.list = async (req, res) => {
+  try {
+    const members = await ClubMember.findAll({
+      where: {
+        clubId: req.params.clubId
+      }
+    })
+
+    const membersId = members.map(member => member.userId);
+
+    let page = req.query.page;
+    let limit = req.query.limit;
+    let offset = (page-1)*limit;
+    
+
+
+    const users = await User.findAndCountAll({
+      where: {
+        id: membersId
+      },
+      attributes: ['id', 'first_name', 'last_name', 'age', 'gender', 'primarySportId', 'secondarySportId', 'profile_photo'],
+      offset: offset,
+      limit: limit
+    })
+
+    let memberData = users.rows;
+
+    res.json(memberData);
+
+  }
+  catch(err) {
+    res.status(500).send({error: err.message});
+  }
+}
+
+
 exports.sendStatus=(req,res)=>{
   const userId=req.params.userId;
   var clubIds=[]
