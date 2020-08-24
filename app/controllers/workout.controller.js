@@ -186,7 +186,7 @@ exports.findWorkoutsByEventIdFront = async (req, res) => {
             },
             attributes: ['heart_rate', 'calories', 'avg_speed', 'distance']
         });
-        const members = EventMember.findAll({
+        const members = await EventMember.findAll({
             where: {
                 eventId: req.params.eventId
             },
@@ -198,7 +198,8 @@ exports.findWorkoutsByEventIdFront = async (req, res) => {
             ]
         });
         members.forEach(member => {
-            nou = list.filter(workout => workout.userId === member.user.id);
+            nou = list.find(workout => workout.userId === member.user.id);
+            nou = nou ? nou : {};
             eventMembers.push({user: member.user,workout: nou});
         });
         res.status(200).json({ event, eventMembers});
