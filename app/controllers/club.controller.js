@@ -87,18 +87,19 @@ exports.createTest = async (req, res) => {
   });
   
   let emailArray = req.body.emailArray;
+  if(emailArray) {
+    const users = await User.findAll({where: {email: emailArray}});
 
-  const users = await User.findAll({where: {email: emailArray}});
-
-  console.log('Users found');
-  for(let i =0; i < users.length; i++) {
-    await ClubMember.create({
-      userId: users[i].id,
-      clubId: createdClubId.id
-    });
+    console.log('Users found');
+    for(let i =0; i < users.length; i++) {
+      await ClubMember.create({
+        userId: users[i].id,
+        clubId: createdClubId.id
+      });
+    }
+  
+    email(`You were invited to club ${createdClubId.name}`  ,emailArray);
   }
-
-  email(`You were invited to club ${createdClubId.name}`  ,emailArray);
  
   res.send({message: 'Succes'});
 }
