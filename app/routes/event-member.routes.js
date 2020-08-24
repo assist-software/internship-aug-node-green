@@ -15,5 +15,11 @@ module.exports = app => {
     //delete a member by inviteId
     router.delete('/remove/:memberId',events.validationRules('delete'),events.validate,events.remove);
 
+    // check if user is member
+    router.get('/membership/:userId',auth.authenticate(),events.isMemberAnyEvent);
+
+    //find events by date by userId
+    router.post('/eventsByDate',auth.authenticate(),events.findEventsByDate);
+
     app.use('/api/event/member',router);
 };
