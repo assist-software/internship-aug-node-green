@@ -1,10 +1,13 @@
-const db=require("../models");
+const db = require("../models");
 const { ClubRequest } = require("../models");
 const { response } = require("express");
 const { get } = require("./user.controller");
 const Users = db.User;
 const Clubs = db.Club;
-const Op=db.Sequelize.Op;
+const Op = db.Sequelize.Op;
+const sendEmail = require('../utils/email.utils.js');
+const bcrypt = require('bcrypt');
+const { body } = require('express-validator');
 
 exports.get = async (req, res) => {
     try {
@@ -18,7 +21,7 @@ exports.get = async (req, res) => {
 
 
         const usersId = users.map(user => user.id);
-        
+
         const clubs = await Clubs.findAll({
             where: {
                 ownerId: usersId
@@ -26,13 +29,13 @@ exports.get = async (req, res) => {
         })
 
         let coachList = [];
-        for(let i=0; i<users.length; i++) {
+        for (let i = 0; i < users.length; i++) {
             let antrenor = users[i];
             let cluburi = clubs.filter(club => club.ownerId === users[i].id).map(club => {
                 let name = club.name;
-                return {name}
+                return { name }
             })
-            coachList.push({antrenor, cluburi}); 
+            coachList.push({ antrenor, cluburi });
         }
         res.json(coachList);
     }
@@ -46,7 +49,7 @@ exports.getPagination = async (req, res) => {
 
         let page = req.query.page;
         let limit = req.query.limit;
-        let offset = (page-1)*limit;
+        let offset = (page - 1) * limit;
 
         const coaches = await Users.findAndCountAll({
             where: {
@@ -64,18 +67,18 @@ exports.getPagination = async (req, res) => {
             }
         })
         let coachList = [];
-        for(let i=0; i<users.length; i++) {
+        for (let i = 0; i < users.length; i++) {
             let antrenor = users[i];
             let cluburi = clubs.filter(club => club.ownerId === users[i].id).map(club => {
                 let name = club.name;
-                return {name}
+                return { name }
             })
-            coachList.push({antrenor, cluburi}); 
+            coachList.push({ antrenor, cluburi });
         }
         res.json(coachList);
     }
-    catch(err) {
-        res.status(500).send({error: err.message});
+    catch (err) {
+        res.status(500).send({ error: err.message });
     }
 }
 
@@ -93,7 +96,7 @@ exports.deleteListOfCoaches = async (req, res) => {
         coaches.forEach(coach => coach.destroy());
         res.status(200).json();
     }
-    catch(err) {
+    catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
@@ -107,19 +110,63 @@ exports.getById = (req, res) => {
         },
         attributes: ['first_name', 'last_name', 'email', 'gender']
     })
-    .then(user => {
-        if(!user) {
-            return res.status(404).send({message: 'Coach not found!'});
-        }
-        else {
-            return res.status(200).send({user});
-        }
-    })
-    .catch(err => {
-        res.send({error: err.message});
-    })
+        .then(user => {
+            if (!user) {
+                return res.status(404).send({ message: 'Coach not found!' });
+            }
+            else {
+                return res.status(200).send({ user });
+            }
+        })
+        .catch(err => {
+            res.send({ error: err.message });
+        })
 }
 
+exports.create = async (req, res ,next) => {
+    try {
+        const exists = await Users.findOne({
+            where: {
+                email: req.body.email
+            }
+        });
+        if(exists) {
+            res.status(409).json({ message: 'Email already exists'});
+            return;
+        }
+        const clubId = req.body.clubId ? req.body.clubId : null ;
+        const password = Math.floor(Math.random()*9999999999) +1000000000;
+        const userPassword = bcrypt.hashSync(`${password}`,10);
+        const {first_name,last_name,email} = req.body;
+        roleId = 2;
+        const newUser = await Users.create({
+            first_name,
+            last_name,
+            email,
+            password: userPassword,
+            roleId,
+            profile_photo: 'images/no_image.png'
+        });
+
+        if(clubId) {
+            const club = await Clubs.findOne({
+                where: {
+                    id: clubId
+                }
+            });
+            club.ownerId = newUser.id;
+            club.save();
+        }
+        const message = 
+        `Your password is: ${password}.
+        Your new club .`
+        sendEmail(message,[email]);
+        res.status(200).json();
+    }
+    catch (err) {
+        res.status(500).send({ message: err.message });
+    }
+}
 exports.setId = (req, res, next) => {
     req.params.userId = req.params.coachId;
     next();
@@ -128,4 +175,13 @@ exports.setId = (req, res, next) => {
 exports.setRole = (req, res, next) => {
     req.body.roleId = 2;
     next();
+}
+
+exports.createValidationRules = () => {
+    return [
+        body('first_name').exists().bail().isString().bail().notEmpty(),
+        body('last_name').exists().bail().isString().bail().notEmpty(),
+        body('email').exists().bail().isEmail(),
+        body('clubId').optional().isInt()
+    ]
 }

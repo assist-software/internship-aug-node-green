@@ -23,5 +23,8 @@ module.exports = app => {
 
     //get all event related to a club
     Router.get('/eventsByClub/:userId',auth.authenticate(), event.findEventsByClub);
+
+    //get all events with all their members
+    Router.get('/allEvents/list',auth.authenticate(),event.findAllEventsWithMembers);
     app.use('/api/event', Router);
 };

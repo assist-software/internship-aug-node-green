@@ -63,7 +63,7 @@ db.EventMember.belongsTo(db.User,{allowNull: false});
 db.EventMember.belongsTo(db.Event,{allowNull: false});
 
 //club assosiations
-db.Club.belongsTo(db.User,{as:'owner', constraints: false});
+db.Club.belongsTo(db.User,{as:'owner',allowNull: false, constraints: false});
 //db.User.hasMany(db.Club);
 //------
 db.Club.belongsTo(db.Sport,{

@@ -145,7 +145,12 @@ exports.search = async (req, res) => {
 // get workout by event id, include User and Event models
 exports.findWorkoutsByEventId = async (req, res) => {
     try {
-
+        const event = await Event.findOne({
+            where: {
+                id: req.params.eventId
+            },
+            attributes: ['id', 'name', 'date', 'time', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover'], 'description', 'location']
+        });
         const list = await Workout.findAll({
             where: {
                 eventId: req.params.eventId
@@ -154,15 +159,11 @@ exports.findWorkoutsByEventId = async (req, res) => {
                 {
                     model: User,
                     attributes: ['id', 'first_name', 'last_name']
-                },
-                {
-                    model: Event,
-                    attributes: ['id', 'name', 'date', 'time', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover'], 'description', 'location']
                 }
             ],
             attributes: ['heart_rate', 'calories', 'avg_speed', 'distance']
         });
-        res.status(200).json(list);
+        res.status(200).json({ event, eventMembers: list});
     }
     catch (err) {
         res.status(500).send({ message: err.message });
