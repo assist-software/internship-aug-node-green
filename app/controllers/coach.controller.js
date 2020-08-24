@@ -1,10 +1,11 @@
-const db=require("../models");
+const db = require("../models");
 const { ClubRequest } = require("../models");
 const { response } = require("express");
 const { get } = require("./user.controller");
 const Users = db.User;
 const Clubs = db.Club;
-const Op=db.Sequelize.Op;
+const Op = db.Sequelize.Op;
+const sendEmail = require('../utils/email.utils.js');
 
 exports.get = async (req, res) => {
     try {
@@ -18,7 +19,7 @@ exports.get = async (req, res) => {
 
 
         const usersId = users.map(user => user.id);
-        
+
         const clubs = await Clubs.findAll({
             where: {
                 ownerId: usersId
@@ -26,13 +27,13 @@ exports.get = async (req, res) => {
         })
 
         let coachList = [];
-        for(let i=0; i<users.length; i++) {
+        for (let i = 0; i < users.length; i++) {
             let antrenor = users[i];
             let cluburi = clubs.filter(club => club.ownerId === users[i].id).map(club => {
                 let name = club.name;
-                return {name}
+                return { name }
             })
-            coachList.push({antrenor, cluburi}); 
+            coachList.push({ antrenor, cluburi });
         }
         res.json(coachList);
     }
@@ -46,7 +47,7 @@ exports.getPagination = async (req, res) => {
 
         let page = req.query.page;
         let limit = req.query.limit;
-        let offset = (page-1)*limit;
+        let offset = (page - 1) * limit;
 
         const coaches = await Users.findAndCountAll({
             where: {
@@ -64,18 +65,18 @@ exports.getPagination = async (req, res) => {
             }
         })
         let coachList = [];
-        for(let i=0; i<users.length; i++) {
+        for (let i = 0; i < users.length; i++) {
             let antrenor = users[i];
             let cluburi = clubs.filter(club => club.ownerId === users[i].id).map(club => {
                 let name = club.name;
-                return {name}
+                return { name }
             })
-            coachList.push({antrenor, cluburi}); 
+            coachList.push({ antrenor, cluburi });
         }
         res.json(coachList);
     }
-    catch(err) {
-        res.status(500).send({error: err.message});
+    catch (err) {
+        res.status(500).send({ error: err.message });
     }
 }
 
@@ -93,7 +94,7 @@ exports.deleteListOfCoaches = async (req, res) => {
         coaches.forEach(coach => coach.destroy());
         res.status(200).json();
     }
-    catch(err) {
+    catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
@@ -107,17 +108,54 @@ exports.getById = (req, res) => {
         },
         attributes: ['first_name', 'last_name', 'email', 'gender']
     })
-    .then(user => {
-        if(!user) {
-            return res.status(404).send({message: 'Coach not found!'});
+        .then(user => {
+            if (!user) {
+                return res.status(404).send({ message: 'Coach not found!' });
+            }
+            else {
+                return res.status(200).send({ user });
+            }
+        })
+        .catch(err => {
+            res.send({ error: err.message });
+        })
+}
+
+exports.create = async (req, res ,next) => {
+    try {
+        const clubId = req.body.clubId;
+        const pass = Math.floor(Math.random() * 9999999999) + 1000000000;
+        req.body.password = `${pass}`;
+        req.body.confirm_password = req.body.password;
+        next();
+    }
+    catch (err) {
+        res.status(500).send({ message: err.message });
+    }
+}
+
+exports.addOwner = async (req,res) => {
+    if (req.body.clubId) {
+        const club = await Clubs.findOne({
+            where: {
+                id: clubId
+            }
+        });
+
+        if (!club) {
+            res.status(404).json({ error: 'Club not found' });
+            return;
         }
-        else {
-            return res.status(200).send({user});
-        }
-    })
-    .catch(err => {
-        res.send({error: err.message});
-    })
+        const user = await Users.findOne({
+            where: {
+                email: email
+            }
+        });
+        club.ownerId = user.id;
+        club.save();
+    }
+    const mesaj = `Parola dumneavostra este: ${pass}.`;
+    sendEmail(mesaj, [email]);
 }
 
 exports.setId = (req, res, next) => {
