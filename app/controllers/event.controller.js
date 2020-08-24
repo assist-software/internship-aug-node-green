@@ -6,6 +6,7 @@ const Events = db.Event;
 const EventMember = db.EventMember;
 const EventRequest = db.EventRequest;
 const ClubMember = db.ClubMember;
+const User = db.User;
 const fs = require('fs');
 const { fn, col } = db.sequelize;
 
@@ -218,6 +219,33 @@ exports.findEventsByClub = async (req, res) => {
     }
 
 };
+
+exports.findAllEventsWithMembers = async (req, res) => {
+    try {
+        const finalList = [];
+        const events = await Events.findAll({
+            attributes: ['id','name','date','time','description','location',[fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover']]
+        });
+        const members = await EventMember.findAll({
+            include: {
+                model: User,
+                attributes: [[fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('profile_photo')),'profile_photo']]
+            },
+            attributes: ['eventId']
+        });
+        events.forEach(event => {
+            const nou = members.filter(member => member.eventId === event.id).map(member => member.user.profile_photo);
+            finalList.push({event: event, members: nou});
+        });
+        //const nou = members.filter(member => member.eventId === 1);
+        
+        res.status(200).json(finalList);
+    }
+    catch(err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 
 // Validation Rules
 exports.createValidator = () => {
