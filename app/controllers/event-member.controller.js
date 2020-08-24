@@ -6,7 +6,7 @@ const Event = db.Event;
 const User = db.User;
 const EventMember = db.EventMember;
 const EventRequest = db.EventRequest;
-const { Op } = require("sequelize");
+const { Op,fn,col } = require("sequelize");
 //create a member
 
 exports.create = async (req, res) => {
@@ -89,6 +89,48 @@ exports.list = async (req, res) => {
         }
     });
     res.status(200).json(data);
+}
+
+exports.isMemberAnyEvent = async (req , res) => {
+    try {
+        const data = await EventMember.findOne({
+            where: {
+                userId: req.params.userId
+            }
+        });
+        if(data) {
+            res.status(200).json({ joined: true});
+        }
+        else{
+            res.status(200).json({joined: false});
+        }
+    }
+    catch(err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+exports.findEventsByDate = async (req, res) => {
+    try{
+        const events = await EventMember.findAll({
+            where: {
+                userId: req.body.id
+            },
+            include: {
+                model: Event,
+                //required: false,
+                where: {
+                    date: req.body.date
+                },
+                attributes: ['id','date','name','location','sportId',[fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover']]
+            },
+            attributes: ['eventId']
+        });
+        res.status(200).json(events);
+    }
+    catch(err) {
+        res.status(500).json({ message: err.message });
+    }
 }
 
 exports.validationRules = method => {
