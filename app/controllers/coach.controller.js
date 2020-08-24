@@ -6,6 +6,8 @@ const Users = db.User;
 const Clubs = db.Club;
 const Op = db.Sequelize.Op;
 const sendEmail = require('../utils/email.utils.js');
+const bcrypt = require('bcrypt');
+const { body } = require('express-validator');
 
 exports.get = async (req, res) => {
     try {
@@ -123,41 +125,48 @@ exports.getById = (req, res) => {
 
 exports.create = async (req, res ,next) => {
     try {
-        const clubId = req.body.clubId;
-        const pass = Math.floor(Math.random() * 9999999999) + 1000000000;
-        req.body.password = `${pass}`;
-        req.body.confirm_password = req.body.password;
-        next();
+        const exists = await Users.findOne({
+            where: {
+                email: req.body.email
+            }
+        });
+        if(exists) {
+            res.status(409).json({ message: 'Email already exists'});
+            return;
+        }
+        const clubId = req.body.clubId ? req.body.clubId : null ;
+        const password = Math.floor(Math.random()*9999999999) +1000000000;
+        const userPassword = bcrypt.hashSync(`${password}`,10);
+        const {first_name,last_name,email} = req.body;
+        roleId = 2;
+        const newUser = await Users.create({
+            first_name,
+            last_name,
+            email,
+            password: userPassword,
+            roleId,
+            profile_photo: 'images/no_image.png'
+        });
+
+        if(clubId) {
+            const club = await Clubs.findOne({
+                where: {
+                    id: clubId
+                }
+            });
+            club.ownerId = newUser.id;
+            club.save();
+        }
+        const message = 
+        `Your password is: ${password}.
+        Your new club .`
+        sendEmail(message,[email]);
+        res.status(200).json();
     }
     catch (err) {
         res.status(500).send({ message: err.message });
     }
 }
-
-exports.addOwner = async (req,res) => {
-    if (req.body.clubId) {
-        const club = await Clubs.findOne({
-            where: {
-                id: clubId
-            }
-        });
-
-        if (!club) {
-            res.status(404).json({ error: 'Club not found' });
-            return;
-        }
-        const user = await Users.findOne({
-            where: {
-                email: email
-            }
-        });
-        club.ownerId = user.id;
-        club.save();
-    }
-    const mesaj = `Parola dumneavostra este: ${pass}.`;
-    sendEmail(mesaj, [email]);
-}
-
 exports.setId = (req, res, next) => {
     req.params.userId = req.params.coachId;
     next();
@@ -166,4 +175,13 @@ exports.setId = (req, res, next) => {
 exports.setRole = (req, res, next) => {
     req.body.roleId = 2;
     next();
+}
+
+exports.createValidationRules = () => {
+    return [
+        body('first_name').exists().bail().isString().bail().notEmpty(),
+        body('last_name').exists().bail().isString().bail().notEmpty(),
+        body('email').exists().bail().isEmail(),
+        body('clubId').optional().isInt()
+    ]
 }

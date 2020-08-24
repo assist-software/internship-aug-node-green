@@ -6,7 +6,7 @@ const User = db.User;
 const Sport = db.Sport;
 const {fn,col} =db.sequelize;
 //create User method
-exports.create = async (req, res) => {
+exports.create = async (req, res, next) => {
     try {
         //check existance
         const userExists = await User.findOne({
@@ -46,7 +46,7 @@ exports.create = async (req, res) => {
             age,
             profile_photo
         });
-        //console.log(req.file);
+
         res.status(200).json();
     }
     catch (err) {
