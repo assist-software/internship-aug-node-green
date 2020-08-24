@@ -5,19 +5,21 @@ const { Club } = require('../models/index.js');
 
     const eventMember = require('../controllers/event-member.controller.js');
 
+    const utils = require('../utils/validate.utils.js');
+
     const router = require('express').Router();
 
     //create a new event - request
-    router.post('/create',eventRequest.validationRules('create'),eventRequest.validate,eventRequest.create);
+    router.post('/create',eventRequest.validationRules('create'),utils.validate,eventRequest.create);
 
     //accpet request
-    router.post('/accept/:requestId',eventRequest.validationRules('acceptAndDelete'),eventRequest.validate,eventRequest.accept,eventMember.validationRules('create'),eventMember.validate,eventMember.create);
+    router.post('/accept/:requestId',eventRequest.validationRules('acceptAndDelete'),utils.validate,eventRequest.accept,eventMember.validationRules('create'),utils.validate,eventMember.create);
 
     //decline request
-    router.delete('/decline/:requestId',eventRequest.validationRules('acceptAndDelete'),eventRequest.validate,eventRequest.decline);
+    router.delete('/decline/:requestId',eventRequest.validationRules('acceptAndDelete'),utils.validate,eventRequest.decline);
 
     //get a list of request by eventId
-    router.get('/:eventId',eventRequest.validationRules('get'),eventRequest.validate,eventRequest.list);
+    router.get('/:eventId',eventRequest.validationRules('get'),utils.validate,eventRequest.list);
 
     app.use('/api/event/request',router);
 };
