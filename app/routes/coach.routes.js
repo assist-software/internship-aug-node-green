@@ -6,14 +6,18 @@ module.exports = app => {
 
     const router = require('express').Router();
 
-    router.post('/api/coach',auth.authenticate() ,coach.setRole ,user.validationRules('create'),user.validate, user.create);
-    router.put('/api/coach/:coachId',auth.authenticate() ,coach.setId ,user.validationRules('update'),user.validate, user.update);
-    router.get('/api/coach/:coachId',auth.authenticate(), coach.getById);
-    router.get('/api/coach', coach.get);
-    router.delete('/api/coach/:coachId', auth.authenticate() ,coach.setId, user.delete );
+    router.post('/',auth.authenticate() ,coach.setRole ,user.validationRules('create'),user.validate, user.create);
+    router.put('/:coachId',auth.authenticate() ,coach.setId ,user.validationRules('update'),user.validate, user.update);
+    router.get('/:coachId',auth.authenticate(), coach.getById);
+    router.get('/', coach.get);
+    router.delete('/:coachId', auth.authenticate() ,coach.setId, user.delete );
+
+    router.delete('/delete/list',coach.deleteListOfCoaches);
+    
     
     //localhost:8080/api/coachPag?page=1&limit=1
     router.get('/api/coachPage', coach.getPagination);
 
     app.use(router);
+    app.use('/api/coach',router);
 };

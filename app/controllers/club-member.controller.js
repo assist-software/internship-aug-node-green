@@ -90,7 +90,7 @@ exports.list = async (req, res) => {
   try {
     const members = await ClubMember.findAll({
       where: {
-        clubId: req.params.clubId
+        clubId: req.params.id
       }
     })
 

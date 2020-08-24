@@ -8,17 +8,7 @@ const {authJwt} = require('./app/middlewares/authJwt');
 const validator = require('express-validator');
 
 
-
-// API Routes
-//const authRoutes = require('./app/routes/auth.routes');
-//const eventRoutes = require('./app/routes/event.routes');
-//const clubRoutes= require('./app/routes/club.routes');
-//const clubInviteRoutes=require('./app/routes/club/invite.routes');
-//global.__basedir = __dirname;
-
 const app = express();
-
-
 
 const corsOptions = {
   origin: false
@@ -34,30 +24,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //set images as static folder
 app.use('/images',express.static('images'));
 
-
-// if you need to drop the existing table and resync database use {force: true}
-/*
-db.sequelize.sync({ force: true })
-  .then(() => {
-    let hardcodedData = require('./app/config/db.hardcodeData');
-    for(let i = 0; i < hardcodedData.length; i++) {
-      let data = hardcodedData[i];
-      data();
-   }
-}); 
-*/
 /*
 const hardocodedData = require('./app/config/db.hardcodeData2');
 db.sequelize.sync({force: true}).then(() => {
   hardocodedData.populateDb();
-}); */
-//hardocodedData.populateDb();
+}); 
+*/
+
 db.sequelize.sync();
 
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  //res.header("Access-Control-Allow-Methods", "*");
   res.header("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
   next();

@@ -14,6 +14,9 @@ exports.get = async (req, res) => {
             },
             attributes: ['id', 'first_name', 'last_name', 'email']
         })
+
+
+
         const usersId = users.map(user => user.id);
         
         const clubs = await Clubs.findAll({
@@ -72,9 +75,28 @@ exports.getPagination = async (req, res) => {
         res.json(coachList);
     }
     catch(err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).send({error: err.message});
     }
 }
+
+exports.deleteListOfCoaches = async (req, res) => {
+    try {
+        const idList = req.body.idList;
+        const coaches = await Users.findAll({
+            where: {
+                id: {
+                    [Op.in]: idList
+                },
+                roleId: 2
+            }
+        });
+        coaches.forEach(coach => coach.destroy());
+        res.status(200).json();
+    }
+    catch(err) {
+        res.status(500).json({ message: err.message });
+    }
+};
 
 
 exports.getById = (req, res) => {
@@ -98,13 +120,12 @@ exports.getById = (req, res) => {
     })
 }
 
-exports.setRole = (req, res, next) => {
-    req.body.roleId = 2;
-    next();
-}
-
 exports.setId = (req, res, next) => {
     req.params.userId = req.params.coachId;
     next();
 }
 
+exports.setRole = (req, res, next) => {
+    req.body.roleId = 2;
+    next();
+}

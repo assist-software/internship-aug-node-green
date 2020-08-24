@@ -3,7 +3,7 @@ module.exports= app => {
     
     
     var router=require("express").Router();
-    router.post("/create",clubs.validate(),clubs.create);
+    router.post("/create",clubs.validate(),clubs.create, clubs.sendMails);
     router.put("/:id",clubs.validateUpdate(),clubs.update);
     router.get("/:id",clubs.findOne);
     router.get("/",clubs.findAll);
@@ -12,7 +12,6 @@ module.exports= app => {
     router.delete("/:id",clubs.delete);
     //Custom
     router.get('/list/all', clubs.findAllWithMembers);
-    
 
     app.use('/api/club',router); 
 }

@@ -12,7 +12,7 @@ module.exports = app => {
 
     router.post('/search',auth.authenticate(),users.validationRules('search'),users.validate,users.search);
 
-    router.put('/:userId',auth.authenticate(),upload.single('profile_photo'),users.validationRules('update'),users.validate,users.update);
+    router.put('/:userId'/*auth.authenticate()*/,upload.single('profile_photo'),users.validationRules('update'),users.validate,users.update);
 
     router.get('/:userId',auth.authenticate(),users.validationRules('verifyUserId'),users.validate, users.get);
 
