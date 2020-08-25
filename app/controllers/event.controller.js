@@ -23,7 +23,7 @@ exports.create = (req, res) => {
                 res.status(404).send({ message: "club not found" });
             }
             //set event_cover
-            const event_cover = (req.file) ? req.file.path : 'images/no_imageEvent.jpg';
+            const event_cover = (req.file) ? req.file.path : 'images/no_imageEvent.jpeg';
             Events.sync().then(() => {
                 Events.create({
                     clubId: req.body.clubId,
@@ -142,7 +142,7 @@ exports.delete = (req, res) => {
             if (!event) {
                 res.status(404).send({ message: "Event ID not found" });
             }
-            if (event.event_cover && event.event_cover !== 'images/no_imageEvent.jpg') {
+            if (event.event_cover && event.event_cover !== 'images/no_imageEvent.jpeg') {
                 fs.unlinkSync(event.event_cover);
             }
             Events.sync().then(() => {
