@@ -23,7 +23,7 @@ exports.create = (req, res) => {
                 res.status(404).send({ message: "club not found" });
             }
             //set event_cover
-            const event_cover = (req.file) ? req.file.path : 'images/no_image.jpg';
+            const event_cover = (req.file) ? req.file.path : 'images/no_imageEvent.jpg';
             Events.sync().then(() => {
                 Events.create({
                     clubId: req.body.clubId,
@@ -142,7 +142,7 @@ exports.delete = (req, res) => {
             if (!event) {
                 res.status(404).send({ message: "Event ID not found" });
             }
-            if (event.event_cover && event.event_cover !== 'images/no_image.jpg') {
+            if (event.event_cover && event.event_cover !== 'images/no_imageEvent.jpg') {
                 fs.unlinkSync(event.event_cover);
             }
             Events.sync().then(() => {
@@ -168,10 +168,10 @@ exports.findAllEventsByUserId = async (req, res) => {
             },
             include: {
                 model: Events,
-                attributes: ['id', 'name', 'date', 'location', 'sportId', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover']]
+                attributes: ['id', 'name', 'date', 'location', 'sportId', [fn('CONCAT', `${req.protocol}://${req.headers.host}/`, col('event_cover')), 'event_cover']]
             },
             attributes: ['eventId']
-        
+
         });
 
         const pending = await EventRequest.findAll({
@@ -180,11 +180,11 @@ exports.findAllEventsByUserId = async (req, res) => {
             },
             include: {
                 model: Events,
-                attributes: ['id', 'name', 'date', 'location', 'sportId', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover']]
+                attributes: ['id', 'name', 'date', 'location', 'sportId', [fn('CONCAT', `${req.protocol}://${req.headers.host}/`, col('event_cover')), 'event_cover']]
             },
             attributes: ['eventId']
         });
-      
+
         res.status(200).json({ joined, pending });
     }
     catch (err) {
@@ -202,16 +202,36 @@ exports.findEventsByClub = async (req, res) => {
             attributes: ['clubId']
         });
         const intClubs = clubs.map(club => club.clubId);
+        const eventMember = await EventMember.findAll({
+            where: {
+                userId: req.params.userId
+            }
+        });
+        const intMembers = eventMember.map(member => member.eventId);
+        const eventRequest = await EventRequest.findAll({
+            where: {
+                userId: req.params.userId
+            }
+        });
+        const intRequest = eventRequest.map(member => member.eventId);
+        const nou = intMembers.concat(intRequest);
 
         const events = await Events.findAll({
             where: {
+                id:{
+                    [Op.notIn]: nou
+                },
                 clubId: {
                     [Op.in]: intClubs
                 }
+
             },
-            attributes: ['id', 'name', 'date', 'location', [fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover'], 'sportId']
+            attributes: ['id', 'name', 'date', 'location', [fn('CONCAT', `${req.protocol}://${req.headers.host}/`, col('event_cover')), 'event_cover'], 'sportId']
         });
-        
+
+
+        //const members = events.filter(event => !intMembers.includes(event.userId) && !intRequest.includes(event.userId));
+
         res.status(200).json(events);
     }
     catch (err) {
@@ -224,24 +244,24 @@ exports.findAllEventsWithMembers = async (req, res) => {
     try {
         const finalList = [];
         const events = await Events.findAll({
-            attributes: ['id','name','date','time','description','location',[fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('event_cover')),'event_cover']]
+            attributes: ['id', 'name', 'date', 'time', 'description', 'location', [fn('CONCAT', `${req.protocol}://${req.headers.host}/`, col('event_cover')), 'event_cover']]
         });
         const members = await EventMember.findAll({
             include: {
                 model: User,
-                attributes: [[fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('profile_photo')),'profile_photo']]
+                attributes: [[fn('CONCAT', `${req.protocol}://${req.headers.host}/`, col('profile_photo')), 'profile_photo']]
             },
             attributes: ['eventId']
         });
         events.forEach(event => {
             const nou = members.filter(member => member.eventId === event.id).map(member => member.user.profile_photo);
-            finalList.push({event: event, members: nou});
+            finalList.push({ event: event, members: nou });
         });
         //const nou = members.filter(member => member.eventId === 1);
-        
+
         res.status(200).json(finalList);
     }
-    catch(err) {
+    catch (err) {
         res.status(500).json({ message: err.message });
     }
 };

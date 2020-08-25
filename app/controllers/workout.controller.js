@@ -159,7 +159,7 @@ exports.findWorkoutsByEventId = async (req, res) => {
             include: [
                 {
                     model: User,
-                    attributes: ['id', 'first_name', 'last_name']
+                    attributes: ['id', 'first_name', 'last_name',[fn('CONCAT',`${req.protocol}://${req.headers.host}/`,col('profile_photo')),'profile_photo']]
                 }
             ],
             attributes: ['heart_rate', 'calories', 'avg_speed', 'distance']
